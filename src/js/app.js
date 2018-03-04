@@ -1,99 +1,114 @@
+import makeCalendar from './makeCalendar';
 import * as d3 from "d3"
 
-var width = 960,
-    height = 136,
-    cellSize = 17; // cell size
 
-var percent = d3.format(".1%"),
-    format = d3.timeFormat("%Y-%m-%d");
+var womenEl = document.querySelector('.gv-w')
+var menEl = document.querySelector('.gv-m')
 
-var color = d3.scaleQuantize()
-    .domain([-.05, .05])
-    .range(d3.range(11).map(function(d) { return "q" + d + "-11"; }));
+makeCalendar(womenEl);
+makeCalendar(menEl);
 
-var svg = d3.select("body").selectAll("svg")
-    .data(d3.range(2018, 2019))
-  .enter().append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("class", "RdYlGn")
-  .append("g")
-    .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
-
-svg.append("text")
-    .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
-    .style("text-anchor", "middle")
-    .text(function(d) { return d; });
-
-var rect = svg.selectAll(".day")
-    .data(function(d) { return d3.timeDays(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
-  .enter().append("rect")
-    .attr("class", "day")
-    .attr("width", cellSize)
-    .attr("height", cellSize)
-    .attr("x", function(d) { return d3.timeWeek.count(d3.timeYear(d), d) * cellSize; })
-    .attr("y", function(d) { return d.getDay() * cellSize; })
-    .datum(format);
-
-rect.append("title")
-    .text(function(d) { return d; });
-
-svg.selectAll(".month")
-    .data(function(d) { return d3.timeMonths(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
-  .enter().append("path")
-    .attr("class", "month")
-    .attr("d", monthPath);
+// end dom creation
 
 d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
   if (error) throw error;
 
-  console.log(csv)
-
-  //get number of weekdays
+  var totalCompaniesReporting = 0;
+  //get number of weekdays in the year
   var totalWeekDays = getTotalWeekDays();
 
   var dates = [];
   for(var i = 0; i < totalWeekDays; i ++){
     dates.push({
-      value: 0,
-      total: 0,
+      womenPaidLess: 0,
+      menPaidLess: 0,
       isWeekend: false
     })
   }
 
+  //group company totals into days on a calendar
   csv.forEach( d =>{
     //console.log(d)
     let lower = Number(d.lower);
     let val = Number(d.value);
-    if(lower > 0){
-      var day = totalWeekDays-Math.floor(lower/100 * totalWeekDays);
-      //console.log(lower)
-      dates[day].value += val;
+    totalCompaniesReporting += val;
+    var day = totalWeekDays-Math.floor( Math.abs(lower)/100 * totalWeekDays);
+
+    if(lower == 0){
+      //skip
+    } else if(lower > 0){
+      //women paid less
+      dates[day].womenPaidLess += val;
+    } else if(lower < 0 && lower != -2000 ){
+      //men paid less
+      //console.log(day)
+      dates[day].menPaidLess += val;
     }
   })
 
+
+  //add back the weekend days
   dates = addsWeekends(dates);
 
-
-
-  var totalCounter = 0;
+  //creates total aggregate
+  var totalWomenCounter = 0;
+  var totalMenCounter = 0;
   dates.forEach(function(d){
-    totalCounter += d.value;
-    d.total = totalCounter;
+    console.log(d.wo)
+    totalWomenCounter += d.womenPaidLess;
+    totalMenCounter += d.menPaidLess;
+    d.womenTotalPaidLess = totalWomenCounter;
+    d.menTotalPaidLess = totalMenCounter;
   })
-  console.log(dates)
+  var maxTotal = (totalWomenCounter > totalMenCounter) ? totalWomenCounter: totalMenCounter;
+  var maxPct = maxTotal / totalCompaniesReporting;
 
-  rect.classed('weekend', function(d, i){
-    return (dates[i].isWeekend) ? true : false;
-  })
-  .classed('hasValues', function(d, i){
-    return (dates[i].value > 0) ? true : false;
-  })
-  rect.classed('fill-opacity', function(d, i){
-
-  })
-
+  //creates percents of totals
+  dates.forEach(function(d){
+    d.womenPctPaidLess = d.womenTotalPaidLess / totalCompaniesReporting;
+    d.menPctPaidLess = d.menTotalPaidLess / totalCompaniesReporting;
+  });
+  console.log( 'totalWomenCos', totalWomenCounter)
+  console.log( 'totalMenCos', totalMenCounter)
+  addData(dates, totalWomenCounter);
 });
+
+function addData(dates, totalWomenCounter){
+
+  var genders = ['women', 'men'];
+
+  var color = d3.scaleThreshold()
+    .domain([0, 5, 25, 125, 625, 3125] )
+    .range([0, .1 ,.2, .3, .4, .5]);
+
+  genders.forEach(g => {
+
+    d3.select('.gv-' + g.charAt(0) ).selectAll(".day")
+    .classed('weekend', function(d, i){
+      return (dates[i].isWeekend) ? true : false;
+    })
+    .classed('hasValues', function(d, i){
+      return (dates[i][g + 'PaidLess'] > 0 && !dates[i].isWeekend) ? true : false;
+    })
+    .classed('dataPaidLess', function(d, i){
+      return (dates[i][ g + 'TotalPaidLess'] > 0 && !dates[i].isWeekend) ? true : false;
+    })
+    .style('fill-opacity', function(d, i){
+      if(!dates[i].isWeekend){
+        return (dates[i][ g + 'TotalPaidLess'] > 0) ? color(dates[i][ g + 'TotalPaidLess']) : 0;
+
+      }
+      return '';
+    })
+
+
+  })
+
+
+
+}
+
+
 
 function getTotalWeekDays(){
   var count = 365;
@@ -109,7 +124,7 @@ function getTotalWeekDays(){
         }
         //console.log(day)
   }
-  console.log('total weekdays',countWeekDays)
+  //console.log('total weekdays',countWeekDays)
   return countWeekDays;
 }
 
@@ -124,8 +139,8 @@ function addsWeekends(dates){
         if(curday.getDay() == 6 || curday.getDay() == 0){
 
           dates.splice(day, 0, {
-            value: 0,
-            total: 0,
+            womenPaidLess: 0,
+            menPaidLess: 0,
             isWeekend: true
           });
         }
@@ -133,15 +148,4 @@ function addsWeekends(dates){
 
   }
   return dates;
-}
-
-function monthPath(t0) {
-  var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0);
-  var d0 = t0.getDay(), w0 = d3.timeWeek.count(d3.timeYear(t0), t0);
-  var d1 = t1.getDay(), w1 = d3.timeWeek.count(d3.timeYear(t1), t1);
-  return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
-      + "H" + w0 * cellSize + "V" + 7 * cellSize
-      + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
-      + "H" + (w1 + 1) * cellSize + "V" + 0
-      + "H" + (w0 + 1) * cellSize + "Z";
 }

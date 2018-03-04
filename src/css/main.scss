@@ -19,12 +19,15 @@
   stroke: #ccc;
 
   &.weekend {
-    fill: #f3f3f3;
+    fill: #eaeaea;
   }
   &.hasValues {
     stroke: yellow;
     stroke-width: 2px;
     stroke-alignment: inner;
+  }
+  &.dataPaidLess {
+    fill: red;
   }
 }
 
