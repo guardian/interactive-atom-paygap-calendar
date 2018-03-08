@@ -1,7 +1,7 @@
 import makeCalendar from './makeCalendar';
 import * as d3 from "d3"
 
-
+var genders = ['women', 'men'];
 var womenEl = document.querySelector('.gv-w')
 var menEl = document.querySelector('.gv-m')
 
@@ -54,7 +54,6 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
   var totalWomenCounter = 0;
   var totalMenCounter = 0;
   dates.forEach(function(d){
-    console.log(d.wo)
     totalWomenCounter += d.womenPaidLess;
     totalMenCounter += d.menPaidLess;
     d.womenTotalPaidLess = totalWomenCounter;
@@ -71,38 +70,53 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
   console.log( 'totalWomenCos', totalWomenCounter)
   console.log( 'totalMenCos', totalMenCounter)
   addData(dates, totalWomenCounter);
+  initScroll(dates);
 });
 
-function addData(dates, totalWomenCounter){
-
-  var genders = ['women', 'men'];
-
-  var color = d3.scaleThreshold()
-    .domain([0, 5, 25, 125, 625, 3125] )
-    .range([0, .1 ,.2, .3, .4, .5]);
+function addData(dates){
 
   genders.forEach(g => {
-
+    d3.select('.gv-' + g.charAt(0) ).selectAll(".dayData").data(dates);
+    d3.select('.gv-' + g.charAt(0) ).selectAll(".day").data(dates);
     d3.select('.gv-' + g.charAt(0) ).selectAll(".day")
     .classed('weekend', function(d, i){
-      return (dates[i].isWeekend) ? true : false;
+      return (d.isWeekend) ? true : false;
     })
-    .classed('hasValues', function(d, i){
-      return (dates[i][g + 'PaidLess'] > 0 && !dates[i].isWeekend) ? true : false;
-    })
-    .classed('dataPaidLess', function(d, i){
-      return (dates[i][ g + 'TotalPaidLess'] > 0 && !dates[i].isWeekend) ? true : false;
-    })
-    .style('fill-opacity', function(d, i){
-      if(!dates[i].isWeekend){
-        return (dates[i][ g + 'TotalPaidLess'] > 0) ? color(dates[i][ g + 'TotalPaidLess']) : 0;
+  })
+}
 
-      }
-      return '';
-    })
+function initScroll(){
+
+  var r = womenEl.getBoundingClientRect();
+
+  window.addEventListener('scroll', function(){
+
+      var centroid = r.top + r.height/2;
+      var wTop = (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0),
+        wHeight = window.innerHeight/2;
+      var windowCenter = wTop + wHeight;
+
+      genders.forEach(g => {
+        d3.select('.gv-' + g.charAt(0) ).selectAll(".dayData")
+        .transition()
+        .delay(0)
+        .ease(d3.easeExpOut)
+        .duration(500)
+          .attr('r', function(d, i){
+
+            if( r.top + Number(d3.select(this).attr('cy')) < windowCenter){
+              return (d[ g + 'PaidLess'] > 0) ? d[ g + 'PaidLess'] * 1 : 0;
+            }
+            return 0;
+          })
+
+
+        });
+
 
 
   })
+
 
 
 
