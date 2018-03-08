@@ -5,6 +5,8 @@ var genders = ['women', 'men'];
 var womenEl = document.querySelector('.gv-w')
 var menEl = document.querySelector('.gv-m')
 
+const cellSize = 30;
+
 makeCalendar(womenEl);
 makeCalendar(menEl);
 
@@ -67,8 +69,8 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
     d.womenPctPaidLess = d.womenTotalPaidLess / totalCompaniesReporting;
     d.menPctPaidLess = d.menTotalPaidLess / totalCompaniesReporting;
   });
-  console.log( 'totalWomenCos', totalWomenCounter)
-  console.log( 'totalMenCos', totalMenCounter)
+  // console.log( 'totalWomenCos', totalWomenCounter)
+  // console.log( 'totalMenCos', totalMenCounter)
   addData(dates, totalWomenCounter);
   initScroll(dates);
 });
@@ -88,6 +90,7 @@ function addData(dates){
 function initScroll(){
 
   var r = womenEl.getBoundingClientRect();
+  
 
   window.addEventListener('scroll', function(){
 
@@ -96,21 +99,26 @@ function initScroll(){
         wHeight = window.innerHeight/2;
       var windowCenter = wTop + wHeight;
 
-      genders.forEach(g => {
-        d3.select('.gv-' + g.charAt(0) ).selectAll(".dayData")
+      genders.forEach(gender => {
+        d3.select('.gv-' + gender.charAt(0) ).selectAll(".dayData")
         .transition()
         .delay(0)
         .ease(d3.easeExpOut)
-        .duration(500)
-          .attr('r', function(d, i){
+        .duration(4000)
+          .attr('fill', d => gender === 'women' ? '#ff7e00' : '#2aadbc')
+          // .attr('r', function(d){
 
-            if( r.top + Number(d3.select(this).attr('cy')) < windowCenter){
-              return (d[ g + 'PaidLess'] > 0) ? d[ g + 'PaidLess'] * 1 : 0;
-            }
-            return 0;
-          })
-
-
+          //   if( r.top + Number(d3.select(this).attr('cy')) < windowCenter){
+          //     return (d[`${gender}PaidLess`] > 0) ? d[`${gender}PaidLess`] * 1 : 0;
+          //   }
+          //   return 0;
+          // })
+          .attr('height', (d) => d[`${gender}PaidLess`] / 100 * cellSize)
+            // if (r.top + Number(d3.select(this).attr('y')) < windowCenter) {
+            //   return (d[`${gender}PaidLess`] > 0) ? d[`${gender}PaidLess`] * 1 : 0;
+            // }
+            // return 0;
+          .attr('width', (d) => d[`${gender}PaidLess`] / 100 * cellSize)
         });
 
 

@@ -7,9 +7,9 @@ export default function makeCalendar(el){
 
 
   //create dom elements
-  var width = 150,
+  var width = 210,
       height = 2123,
-      cellSize = 20; // cell size
+      cellSize = 30; // cell size
 
   var percent = d3.format(".1%"),
       format = d3.timeFormat("%Y-%m-%d");
@@ -25,7 +25,7 @@ export default function makeCalendar(el){
       .attr("height", height)
       .attr("class", "RdYlGn")
     .append("g")
-      //.attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
+    //   .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
 
   svg.append("text")
       .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
@@ -43,16 +43,16 @@ export default function makeCalendar(el){
       .attr("x", function(d) { return d.getDay() * cellSize; })
       .datum(format);
 
-  var dataCircles = svg.selectAll(".dayData")
+  var dataSquares = svg.selectAll(".dayData")
       .data(function(d) { return d3.timeDays(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
     .enter()
-      .append("circle")
+      .append("rect")
       .attr("class", "dayData")
-      .attr("width", cellSize)
-      .attr("height", cellSize)
-      .attr("cy", function(d) { return d3.timeWeek.count(d3.timeYear(d), d) * cellSize + .5*cellSize; })
-      .attr("cx", function(d) { return d.getDay() * cellSize + .5*cellSize; })
-      .attr("r", 0)
+      .attr("width", 0)
+      .attr("height", 0)
+      .attr("y", function(d) { return d3.timeWeek.count(d3.timeYear(d), d) * cellSize + cellSize; })
+      .attr("x", function(d) { return d.getDay() * cellSize; })
+    //   .attr("r", 0)
 
   rect.append("title")
       .text(function(d) { return d; });

@@ -14,9 +14,16 @@
     overflow: hidden;
 }
 
+.gv-container {
+  display: flex;
+  margin: 100px auto;
+  width: 480px;
+  justify-content: space-between;
+}
+
 .gv-w, .gv-m {
-  float: left;
-  margin-left: 0px;
+  // float: left;
+  // margin-left: 0px;
   margin-bottom: 500px;
   h2 {
     max-width: 300px;
@@ -42,9 +49,10 @@
 }
 
 .dayData {
-  fill-opacity: 0;
+  // fill-opacity: 0;
+  // fill: white;
   stroke: #000;
-  stroke-width: 2px;
+  // stroke-width: 2px;
 
   .gv-w &{
     stroke: #ff7e00;
