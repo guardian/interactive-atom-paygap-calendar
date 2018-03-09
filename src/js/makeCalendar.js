@@ -39,6 +39,7 @@ export default function makeCalendar(el){
       .attr("class", "day")
       .attr("width", cellSize)
       .attr("height", cellSize)
+      .attr('fill', '#fff')
       .attr("y", function(d) { return d3.timeWeek.count(d3.timeYear(d), d) * cellSize; })
       .attr("x", function(d) { return d.getDay() * cellSize; })
       .datum(format);
@@ -51,7 +52,7 @@ export default function makeCalendar(el){
       .attr("width", 0)
       .attr("height", 0)
       .attr("y", function(d) { return d3.timeWeek.count(d3.timeYear(d), d) * cellSize + cellSize; })
-      .attr("x", function(d) { return d.getDay() * cellSize; })
+      .attr("x", function (d) { return d.getDay() * cellSize; })
     //   .attr("r", 0)
 
   rect.append("title")
@@ -71,7 +72,7 @@ export default function makeCalendar(el){
     var d0 = t0.getDay(), w0 = d3.timeWeek.count(d3.timeYear(t0), t0);
     var d1 = t1.getDay(), w1 = d3.timeWeek.count(d3.timeYear(t1), t1);
 
-    console.log(t0, t1, d0, d1)
+    // console.log(t0, t1, d0, d1)
     return "M" + d0 * cellSize + "," + w0 * cellSize
         + "H" + 7 * cellSize + "V" + w0 * cellSize
         + "H" + 7 * cellSize + "V" + w1 * cellSize

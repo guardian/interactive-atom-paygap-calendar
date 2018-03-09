@@ -106,28 +106,26 @@ function initScroll(){
         .ease(d3.easeExpOut)
         .duration(4000)
           .attr('fill', d => gender === 'women' ? '#ff7e00' : '#2aadbc')
-          // .attr('r', function(d){
+          .attr('y', d => (d3.timeWeek.count(d3.timeYear(d.date), d.date) * cellSize) - (d[`${gender}PaidLess`] / 100 * cellSize - cellSize))
+          .attr('height', d => d[`${gender}PaidLess`] / 100 * cellSize)
+          .attr('width', d => d[`${gender}PaidLess`] / 100 * cellSize)
 
-          //   if( r.top + Number(d3.select(this).attr('cy')) < windowCenter){
-          //     return (d[`${gender}PaidLess`] > 0) ? d[`${gender}PaidLess`] * 1 : 0;
-          //   }
-          //   return 0;
-          // })
-          .attr('height', (d) => d[`${gender}PaidLess`] / 100 * cellSize)
-            // if (r.top + Number(d3.select(this).attr('y')) < windowCenter) {
-            //   return (d[`${gender}PaidLess`] > 0) ? d[`${gender}PaidLess`] * 1 : 0;
-            // }
-            // return 0;
-          .attr('width', (d) => d[`${gender}PaidLess`] / 100 * cellSize)
+        d3.select('.gv-' + gender.charAt(0)).selectAll(".day")
+          .transition()
+          .delay(0)
+          .ease(d3.easeExpOut)
+          .duration(4000)
+          .attr('fill', d => d[`${gender}PaidLess`] > 0 && gender === 'women' ? '#ff7e00' : 'white')
+          .attr('fill-opacity', 0.3)
+          // .attr('y', d => (d3.timeWeek.count(d3.timeYear(d.date), d.date) * cellSize))
+          .attr('height', cellSize)
+          .attr('width', cellSize)
+
         });
 
 
 
   })
-
-
-
-
 }
 
 
