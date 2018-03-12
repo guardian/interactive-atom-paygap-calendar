@@ -18,16 +18,13 @@
   display: flex;
   margin: 100px auto;
   width: 480px;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .gv-w, .gv-m {
-  // float: left;
-  // margin-left: 0px;
-  margin-bottom: 500px;
   h2 {
     max-width: 300px;
-    display: none;
+    // display: none;
   }
 }
 
@@ -77,4 +74,16 @@
   height: 50px;
   background: rgba(255,255,255,.9);
   left: 0;
+}
+
+.arrow-path {
+  fill: none;
+  stroke: #000;
+}
+
+.arrow-text {
+  fill: #000;
+  // stroke: white;
+  font-size: 16px;
+  // stroke-width: 0.03em
 }

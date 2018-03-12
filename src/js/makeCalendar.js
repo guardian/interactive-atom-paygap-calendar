@@ -7,9 +7,9 @@ export default function makeCalendar(el){
 
 
   //create dom elements
-  var width = 210,
-      height = 2123,
-      cellSize = 30; // cell size
+  const cellSize = 60;
+  const width = cellSize * 7;
+  const height = 3240;
 
   var percent = d3.format(".1%"),
       format = d3.timeFormat("%Y-%m-%d");
@@ -26,7 +26,6 @@ export default function makeCalendar(el){
       .attr("class", "RdYlGn")
     .append("g")
     //   .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
-
   svg.append("text")
       .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
       .style("text-anchor", "middle")

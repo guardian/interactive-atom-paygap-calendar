@@ -1,14 +1,20 @@
 import makeCalendar from './makeCalendar';
-import * as d3 from "d3"
+import * as d3 from "d3";
+import { swoopyDrag } from 'd3-swoopy-drag';
 
-var genders = ['women', 'men'];
-var womenEl = document.querySelector('.gv-w')
-var menEl = document.querySelector('.gv-m')
+const genders = ['women', 'men'];
+const womenEl = document.querySelector('.gv-w')
 
-const cellSize = 30;
+const calendarWomen = document.querySelector('.RdYlGn');
+const container = document.querySelector('.gv-container');
+ 
+const calcXDatePosition = (date, cellSize) => date.getDay() * cellSize;
+const calcYDatePosition = (date, cellSize) => d3.timeWeek.count(d3.timeYear(date), date) * cellSize;
+
+
+const cellSize = 60;
 
 makeCalendar(womenEl);
-makeCalendar(menEl);
 
 // end dom creation
 
@@ -29,7 +35,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
   }
 
   //group company totals into days on a calendar
-  csv.forEach( d =>{
+  csv.forEach( d => {
     //console.log(d)
     let lower = Number(d.lower);
     let val = Number(d.value);
@@ -72,59 +78,100 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
   // console.log( 'totalWomenCos', totalWomenCounter)
   // console.log( 'totalMenCos', totalMenCounter)
   addData(dates, totalWomenCounter);
+
+
+  const earliestDay = dates.find(obj => obj.womenPaidLess > 0);
+
+  const annotations = [
+    {
+      "dateX": 90,
+      "dateY": 600,
+      "path": "M-54,-119C-69,-25,-29,12,-3,26",
+      "text": "The companies that stops paying the earliest",
+      "textOffset": [
+        -77,
+        -133
+      ]
+    }
+  ]
+
+  const womenSvg = d3.select(container)
+    .select("svg")
+    .style("overflow", "visible")
+
+    womenSvg
+    .append('marker')
+    .attr('id', 'arrow')
+    .attr('viewBox', '-10 -10 20 20')
+    .attr('markerWidth', 10)
+    .attr('markerHeight', 20)
+    .attr('orient', 'auto')
+    .append('path')
+    .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
+
+  const swoopy = swoopyDrag()
+    // .draggable(true)
+    .x(d => d.dateX)
+    .y(d => d.dateY)
+    .annotations(annotations)
+
+
+  const swoopySel = womenSvg.append('g')
+    .call(swoopy);
+
+  swoopySel.selectAll('path')
+  .classed('arrow-path', true)
+  .attr('marker-end', 'url(#arrow)')
+
+  swoopySel.selectAll('text')
+  .classed('arrow-text', true)
+
+  //describe shape of arrow heads
+
   initScroll(dates);
 });
 
 function addData(dates){
-
-  genders.forEach(g => {
-    d3.select('.gv-' + g.charAt(0) ).selectAll(".dayData").data(dates);
-    d3.select('.gv-' + g.charAt(0) ).selectAll(".day").data(dates);
-    d3.select('.gv-' + g.charAt(0) ).selectAll(".day")
+    d3.select('.gv-w').selectAll(".dayData").data(dates);
+    d3.select('.gv-w').selectAll(".day").data(dates);
+    d3.select('.gv-w').selectAll(".day")
     .classed('weekend', function(d, i){
       return (d.isWeekend) ? true : false;
     })
-  })
 }
 
-function initScroll(){
+function initScroll() {
 
-  var r = womenEl.getBoundingClientRect();
+  const womenRect = womenEl.getBoundingClientRect();
   
+  console.log(womenRect)
 
-  window.addEventListener('scroll', function(){
-
-      var centroid = r.top + r.height/2;
-      var wTop = (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0),
+  window.addEventListener('scroll', () => {
+    const centroid = womenRect.top + womenRect.height / 2;
+      const wTop = (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0),
         wHeight = window.innerHeight/2;
-      var windowCenter = wTop + wHeight;
+      const windowCenter = wTop + wHeight;
 
-      genders.forEach(gender => {
-        d3.select('.gv-' + gender.charAt(0) ).selectAll(".dayData")
+        d3.select('.gv-w').selectAll(".dayData")
         .transition()
         .delay(0)
         .ease(d3.easeExpOut)
         .duration(4000)
-          .attr('fill', d => gender === 'women' ? '#ff7e00' : '#2aadbc')
-          .attr('y', d => (d3.timeWeek.count(d3.timeYear(d.date), d.date) * cellSize) - (d[`${gender}PaidLess`] / 100 * cellSize - cellSize))
-          .attr('height', d => d[`${gender}PaidLess`] / 100 * cellSize)
-          .attr('width', d => d[`${gender}PaidLess`] / 100 * cellSize)
+          .attr('fill', '#ff7e00')
+          .attr('y', d => calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize - cellSize))
+          .attr('height', d => d['womenPaidLess'] / 100 * cellSize)
+          .attr('width', d => d['womenPaidLess'] / 100 * cellSize)
 
-        d3.select('.gv-' + gender.charAt(0)).selectAll(".day")
+        d3.select('.gv-w').selectAll(".day")
           .transition()
           .delay(0)
           .ease(d3.easeExpOut)
           .duration(4000)
-          .attr('fill', d => d[`${gender}PaidLess`] > 0 && gender === 'women' ? '#ff7e00' : 'white')
+          .attr('fill', d => d['womenPaidLess'] > 0 ? '#ff7e00' : 'white')
           .attr('fill-opacity', 0.3)
           // .attr('y', d => (d3.timeWeek.count(d3.timeYear(d.date), d.date) * cellSize))
           .attr('height', cellSize)
           .attr('width', cellSize)
-
-        });
-
-
-
   })
 }
 

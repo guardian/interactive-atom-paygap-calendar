@@ -49,6 +49,7 @@
   "dependencies": {
     "babel": "^6.23.0",
     "d3": "^4.13.0",
+    "d3-swoopy-drag": "0.0.3",
     "gulp-rename": "^1.2.2",
     "node-sass": "^4.7.2",
     "promise-polyfill": "^6.0.2",
