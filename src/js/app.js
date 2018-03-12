@@ -143,31 +143,41 @@ function addData(dates){
 function initScroll() {
 
   const womenRect = womenEl.getBoundingClientRect();
-  
-  console.log(womenRect)
 
   window.addEventListener('scroll', () => {
     const centroid = womenRect.top + womenRect.height / 2;
-      const wTop = (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0),
-        wHeight = window.innerHeight/2;
+      const wTop = (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0)
+      const wHeight = window.innerHeight / 2;
       const windowCenter = wTop + wHeight;
 
         d3.select('.gv-w').selectAll(".dayData")
         .transition()
         .delay(0)
         .ease(d3.easeExpOut)
-        .duration(4000)
+        .duration(2500)
           .attr('fill', '#ff7e00')
           .attr('y', d => calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize - cellSize))
-          .attr('height', d => d['womenPaidLess'] / 100 * cellSize)
-          .attr('width', d => d['womenPaidLess'] / 100 * cellSize)
+          .attr('height', d => {
+            if (womenRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter) {
+              return d['womenPaidLess'] / 100 * cellSize;
+            } else {
+              return 0;
+            }
+          })
+          .attr('width', d => {
+            if (womenRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter) {
+              return d['womenPaidLess'] / 100 * cellSize;
+            } else {
+              return 0;
+            }
+          })
 
         d3.select('.gv-w').selectAll(".day")
           .transition()
           .delay(0)
           .ease(d3.easeExpOut)
-          .duration(4000)
-          .attr('fill', d => d['womenPaidLess'] > 0 ? '#ff7e00' : 'white')
+          .duration(2000)
+          .attr('fill', d => womenRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter && d['womenPaidLess'] > 0 ? '#ff7e00' : 'white')
           .attr('fill-opacity', 0.3)
           // .attr('y', d => (d3.timeWeek.count(d3.timeYear(d.date), d.date) * cellSize))
           .attr('height', cellSize)
