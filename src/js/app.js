@@ -24,9 +24,11 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
   var totalCompaniesReporting = 0;
   //get number of weekdays in the year
   var totalWeekDays = getTotalWeekDays();
-
+  
   var dates = [];
-  for(var i = 0; i < totalWeekDays; i ++){
+
+  // NB POSSIBLY REVIEW: HAD TO CHANGE THIS FROM < TO <= TO PREVENT IT FROM BREAKING WITH THE NEW DATASET
+  for(var i = 0; i <= totalWeekDays; i++){
     dates.push({
       womenPaidLess: 0,
       menPaidLess: 0,
@@ -36,24 +38,21 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
 
   //group company totals into days on a calendar
   csv.forEach( d => {
-    //console.log(d)
     let lower = Number(d.lower);
     let val = Number(d.value);
     totalCompaniesReporting += val;
-    var day = totalWeekDays-Math.floor( Math.abs(lower)/100 * totalWeekDays);
-
-    if(lower == 0){
+    let day = totalWeekDays - Math.floor( Math.abs(lower)/100 * totalWeekDays);
+ 
+    if (lower === 0){
       //skip
-    } else if(lower > 0){
+    } else if (lower > 0){
       //women paid less
       dates[day].womenPaidLess += val;
-    } else if(lower < 0 && lower != -2000 ){
+    } else if (lower < 0 && lower > -2000){
       //men paid less
-      //console.log(day)
       dates[day].menPaidLess += val;
     }
   })
-
 
   //add back the weekend days
   dates = addsWeekends(dates);
@@ -86,11 +85,11 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
     {
       "dateX": 90,
       "dateY": 600,
-      "path": "M-54,-119C-69,-25,-29,12,-3,26",
-      "text": "The companies that stops paying the earliest",
+      "path": "M-21,519C-21,589,16,639,83,653",
+      "text": "The earliest date at which women would start working for free",
       "textOffset": [
-        -77,
-        -133
+        -72,
+        508
       ]
     }
   ]
@@ -102,6 +101,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
     womenSvg
     .append('marker')
     .attr('id', 'arrow')
+    .attr('fill-opacity', 0)
     .attr('viewBox', '-10 -10 20 20')
     .attr('markerWidth', 10)
     .attr('markerHeight', 20)
@@ -113,20 +113,22 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
     // .draggable(true)
     .x(d => d.dateX)
     .y(d => d.dateY)
+    .on('drag', () => window.annotations = annotations)
     .annotations(annotations)
 
 
   const swoopySel = womenSvg.append('g')
+    .classed('swoopy-arrow-group', true)
     .call(swoopy);
 
   swoopySel.selectAll('path')
-  .classed('arrow-path', true)
+  .attr('fill', 'none')
+  .attr('stroke', '#000')
+  .attr('stroke-opacity', 0)
   .attr('marker-end', 'url(#arrow)')
 
   swoopySel.selectAll('text')
-  .classed('arrow-text', true)
-
-  //describe shape of arrow heads
+    .attr('fill-opacity', 0)
 
   initScroll(dates);
 });
@@ -149,6 +151,8 @@ function initScroll() {
       const wTop = (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0)
       const wHeight = window.innerHeight / 2;
       const windowCenter = wTop + wHeight;
+      const d3Container = d3.select(container);
+      const arrows = d3Container.selectAll('.swoopy-arrow-group');
 
         d3.select('.gv-w').selectAll(".dayData")
         .transition()
@@ -158,7 +162,7 @@ function initScroll() {
           .attr('fill', '#ff7e00')
           .attr('y', d => calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize - cellSize))
           .attr('height', d => {
-            if (womenRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter) {
+            if (d['womenPaidLess'] > 0 && womenRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter) {
               return d['womenPaidLess'] / 100 * cellSize;
             } else {
               return 0;
@@ -177,11 +181,40 @@ function initScroll() {
           .delay(0)
           .ease(d3.easeExpOut)
           .duration(2000)
-          .attr('fill', d => womenRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter && d['womenPaidLess'] > 0 ? '#ff7e00' : 'white')
+          .attr('fill', d => d['womenPaidLess'] > 0 && womenRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter ? '#ff7e00': '#fff')
           .attr('fill-opacity', 0.3)
-          // .attr('y', d => (d3.timeWeek.count(d3.timeYear(d.date), d.date) * cellSize))
           .attr('height', cellSize)
           .attr('width', cellSize)
+    
+
+          /* Swoopy arrows stuff */
+          arrows.selectAll('path')
+            .transition()
+            .delay(0)
+            .ease(d3.easeExpOut)
+            .duration(4000)
+            .attr('stroke-opacity', d => womenRect.top + 508 < windowCenter ? 1 : 0)
+            .attr('marker-end', 'url(#arrow)')
+          
+          arrows.selectAll('text')
+            .transition()
+            .delay(0)
+            .ease(d3.easeExpOut)
+            .duration(4000)
+            .attr('fill-opacity', 1)
+
+          d3Container.selectAll('marker')
+            .transition()
+            .delay(0)
+            .ease(d3.easeExpOut)
+            .duration(4000)
+            .attr('fill-opacity', 1)
+
+          /* Highilighting parts of calendar (not working) */
+          // d3.select('.gv-w').select("rect[id='2018-01-20']")
+          //   .attr('fill', d => console.log(this))
+          //   .attr('fill-opacity', 1)
+
   })
 }
 
