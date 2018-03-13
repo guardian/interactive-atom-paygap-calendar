@@ -17,14 +17,21 @@
 .gv-container {
   display: flex;
   margin: 100px auto;
-  width: 480px;
+  width: 800px;
   justify-content: space-around;
+
+  p {
+    margin-top: 80px;
+    padding-left: 40px;
+    font-size: 18px;
+  }
 }
 
 .gv-w, .gv-m {
   margin-bottom: 500px;
   h2 {
-    max-width: 300px;
+    max-width: 600px;
+    margin-bottom: 50px;
     // display: none;
   }
 }
@@ -75,11 +82,6 @@
   height: 50px;
   background: rgba(255,255,255,.9);
   left: 0;
-}
-
-.arrow-path {
-  fill: none;
-  stroke: #000;
 }
 
 .arrow-text {

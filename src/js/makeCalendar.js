@@ -29,7 +29,8 @@ export default function makeCalendar(el){
   svg.append("text")
       .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
       .style("text-anchor", "middle")
-      .text(function(d) { return d; });
+      // .text(function(d) { return d; });
+      .text('January 2018')
 
   var rect = svg.selectAll(".day")
       .data(function(d) { return d3.timeDays(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
@@ -38,7 +39,7 @@ export default function makeCalendar(el){
       .attr("class", "day")
       .attr("width", cellSize)
       .attr("height", cellSize)
-      .attr('fill', '#fff')
+      .attr('fill-opacity', 0)
       .attr("y", function(d) { return d3.timeWeek.count(d3.timeYear(d), d) * cellSize; })
       .attr("x", function(d) { return d.getDay() * cellSize; })
       .datum(format);
