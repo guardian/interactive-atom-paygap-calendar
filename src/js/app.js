@@ -1,20 +1,24 @@
-import makeCalendar from './makeCalendar';
+import makeMonthSvg from './makeMonth';
 import * as d3 from "d3";
 import { swoopyDrag } from 'd3-swoopy-drag';
 
 const genders = ['women', 'men'];
 const womenEl = document.querySelector('.gv-w')
 
-const calendarWomen = document.querySelector('.RdYlGn');
+const febEl = document.querySelector('.february')
+
+const calendarWomen = document.querySelector('.month-svg');
 const container = document.querySelector('.gv-container');
  
 const calcXDatePosition = (date, cellSize) => date.getDay() * cellSize;
-const calcYDatePosition = (date, cellSize) => d3.timeWeek.count(d3.timeYear(date), date) * cellSize;
+const calcYDatePosition = (date, cellSize) => d3.timeWeek.count(d3.timeMonth(date), date) * cellSize;
+
+const isSameDay = (dateToCheck, actualDate) => dateToCheck.getDate() === actualDate.getDate() && dateToCheck.getMonth() === actualDate.getMonth() && dateToCheck.getFullYear() === actualDate.getFullYear();
 
 
 const cellSize = 60;
 
-makeCalendar(womenEl);
+makeMonthSvg(womenEl, 10, 60);
 
 // end dom creation
 
@@ -37,13 +41,13 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
   }
 
   //group company totals into days on a calendar
-  csv.forEach( d => {
+  csv.forEach(d => {
     let lower = Number(d.lower);
     let val = Number(d.value);
     totalCompaniesReporting += val;
     let day = totalWeekDays - Math.floor( Math.abs(lower)/100 * totalWeekDays);
  
-    if (lower === 0){
+    if (lower === 0) {
       //skip
     } else if (lower > 0){
       //women paid less
@@ -76,6 +80,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
   });
   // console.log( 'totalWomenCos', totalWomenCounter)
   // console.log( 'totalMenCos', totalMenCounter)
+  
   addData(dates, totalWomenCounter);
 
 
@@ -122,6 +127,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
     .call(swoopy);
 
   swoopySel.selectAll('path')
+  // .attr('class', d => `swoopy-path-${d.dateY}`)
   .attr('fill', 'none')
   .attr('stroke', '#000')
   .attr('stroke-opacity', 0)
@@ -133,7 +139,18 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
   initScroll(dates);
 });
 
-function addData(dates){
+function addData(dates, monthAsInt) {
+
+    const month = 5;
+    const firstDayOfMonth = new Date(2018, month, 1);
+    const lastDayOfMonth = d3.timeDays(firstDayOfMonth, new Date(2018, month + 1, 1)).slice(-1)[0];
+    
+    const firstDayIndex = dates.findIndex(d => isSameDay(d.date, firstDayOfMonth));
+    const lastDayIndex = dates.findIndex(d => isSameDay(d.date, lastDayOfMonth));
+
+    const datesss = dates.slice(firstDayIndex, lastDayIndex + 1);
+    console.log(datesss)
+
     d3.select('.gv-w').selectAll(".dayData").data(dates);
     d3.select('.gv-w').selectAll(".day").data(dates);
     d3.select('.gv-w').selectAll(".day")
