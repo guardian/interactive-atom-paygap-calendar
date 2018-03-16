@@ -14,22 +14,43 @@
     overflow: hidden;
 }
 
+.main-container {
+  display: flex;
+  padding: 0 40px;
+}
+
+.text-column-container {
+    p {
+    margin-top: 80px;
+    padding-left: 40px;
+    font-size: 18px;
+  }
+}
+
+.months-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 100px;
+  margin-right: 100px;
+  width: 800px;
+  // justify-content: space-around;
+}
+
 .gv-w, .gv-m {
-  float: left;
-  margin-left: 0px;
   margin-bottom: 500px;
   h2 {
-    max-width: 300px;
-    display: none;
+    max-width: 600px;
+    margin-bottom: 50px;
+    // display: none;
   }
 }
 
 .day {
-  fill: #fff;
   stroke: #ccc;
 
   &.weekend {
-    fill: #eaeaea;
+    fill: #ccc;
+    fill-opacity: 0.4;
   }
   &.hasValues {
     stroke: yellow;
@@ -42,9 +63,10 @@
 }
 
 .dayData {
-  fill-opacity: 0;
-  stroke: #000;
-  stroke-width: 2px;
+  // fill-opacity: 0;
+  // fill: white;
+  // stroke: #000;
+  // stroke-width: 2px;
 
   .gv-w &{
     stroke: #ff7e00;
@@ -69,4 +91,11 @@
   height: 50px;
   background: rgba(255,255,255,.9);
   left: 0;
+}
+
+.arrow-text {
+  fill: #000;
+  // stroke: white;
+  font-size: 16px;
+  // stroke-width: 0.03em
 }
