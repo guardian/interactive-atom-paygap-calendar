@@ -14,17 +14,26 @@
     overflow: hidden;
 }
 
-.gv-container {
+.main-container {
   display: flex;
-  margin: 100px auto;
-  width: 800px;
-  justify-content: space-around;
+  padding: 0 40px;
+}
 
-  p {
+.text-column-container {
+    p {
     margin-top: 80px;
     padding-left: 40px;
     font-size: 18px;
   }
+}
+
+.months-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 100px;
+  margin-right: 100px;
+  width: 800px;
+  // justify-content: space-around;
 }
 
 .gv-w, .gv-m {
@@ -56,7 +65,7 @@
 .dayData {
   // fill-opacity: 0;
   // fill: white;
-  stroke: #000;
+  // stroke: #000;
   // stroke-width: 2px;
 
   .gv-w &{
