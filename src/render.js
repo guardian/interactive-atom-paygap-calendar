@@ -1,8 +1,18 @@
-import templateHTML from "./src/templates/main.html!text"
+import templateHTML from "./src/templates/main.html!text";
+import rp from 'request-promise';
+import Mustache from 'mustache';
 
 export async function render() {
-	// this function just has to return a string of HTML
-	// you can generate this using js, e.g. using Mustache.js
+	const projectCopy = await rp({ uri: 'https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx18bsE-n85w1SbaWHjiWE.json', json: true });
 
-    return templateHTML;
+	const html = Mustache.render(templateHTML, {
+		headline: projectCopy.headline,
+		standfirst: projectCopy.standfirst,
+		january: projectCopy.january,
+		april: projectCopy.april,
+		july: projectCopy.july,
+		december: projectCopy.december
+	})
+
+    return html;
 }
