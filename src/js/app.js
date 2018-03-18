@@ -8,7 +8,7 @@ const calcYDatePosition = (date, cellSize) => d3.timeWeek.count(d3.timeMonth(dat
 const isSameDay = (dateToCheck, actualDate) => { return dateToCheck.getDate() === actualDate.getDate() && dateToCheck.getMonth() === actualDate.getMonth() && dateToCheck.getFullYear() === actualDate.getFullYear()};
 
 // config variables
-const cellSize = 60;
+const cellSize = 860/7;
 const container = document.querySelector('.months-container');
 const domElements = document.querySelectorAll('.cal-month'); // months need to be named correctly in the css classes, all lowercase
 const genders = ['women', 'men'];
@@ -41,7 +41,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
     let lower = Number(d.lower);
     let val = Number(d.value);
     totalCompaniesReporting += val;
-    let day = totalWeekDays - Math.floor( Math.abs(lower)/100 * totalWeekDays);
+    let day =  Math.floor( Math.abs(lower)/100 * totalWeekDays);
  
     if (lower === 0) {
       //skip

@@ -13,7 +13,7 @@
  * @group typography
  */
 
-@mixin guss-typography-defaults($font-family: $f-serif-text) {
+ @mixin guss-typography-defaults($font-family: $f-serif-text) {
     @at-root {
         html {
             font-family: $font-family;

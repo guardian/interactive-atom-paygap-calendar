@@ -14,26 +14,77 @@
     overflow: hidden;
 }
 
-.main-container {
-  display: flex;
-  padding: 0 40px;
+@import "mq";
+
+.interactive-atom {
+     p, & > h2, .element-interactive,.element-atom { 
+        max-width: 620px;
+
+        @include mq(leftCol) {
+            margin-left: 160px !important;
+        }
+        @include mq(wide) {
+            margin-left: 240px !important;
+        }
+    }
+
+    & > h2 {
+    	@include fs-bodyHeading(4);
+    
+    	color: #333;
+    	margin-top: 36px;
+    	margin-bottom: 6px;
+    }
+
+    .element--immersive {
+    	max-width: initial;
+    	margin-left: 0 !important;
+        margin-bottom: 36px !important;
+    } 
+
+    .element--showcase {
+        
+    }
 }
 
-.text-column-container {
-    p {
-    margin-top: 80px;
-    padding-left: 40px;
-    font-size: 18px;
+.counter {
+
+  @include mq(leftCol) {
+    margin-left: 160px !important;
   }
+  @include mq(wide) {
+      margin-left: 240px !important;
+  }
+
+  .number{
+    display: inline-block;
+    background: red;
+    color: #fff;
+    min-width: 75px;
+    text-align: center;
+    @include fs-titlepiece(4);
+    font-size: 96px;
+    line-height: 96px;
+    padding: 10px;
+  }
+}
+
+.main-container {
+  display: flex;
+
 }
 
 .months-container {
   display: flex;
   flex-direction: column;
   margin-top: 100px;
-  margin-right: 100px;
-  width: 800px;
-  // justify-content: space-around;
+
+  @include mq(leftCol) {
+    margin-left: 160px !important;
+  }
+  @include mq(wide) {
+      margin-left: 240px !important;
+  }
 }
 
 .gv-w, .gv-m {
@@ -49,8 +100,7 @@
   stroke: #ccc;
 
   &.weekend {
-    fill: #ccc;
-    fill-opacity: 0.4;
+    fill: url(#diagonal-stripe-1);
   }
   &.hasValues {
     stroke: yellow;
