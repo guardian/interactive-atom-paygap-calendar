@@ -79,7 +79,7 @@
           }
       }
   
-      & > h2 {
+      h2 {
           font-family: "Guardian Headline", "Guardian Egyptian Web", Georgia;
           font-size: 36px;
           line-height: 42px;
@@ -93,6 +93,21 @@
           line-height: 28px;
         }
       }
+
+      h3 {
+        font-family: "Guardian Headline", "Guardian Egyptian Web", Georgia;
+        font-size: 30px;
+        line-height: 32px;
+        font-weight: 700;
+        color: #333;
+        margin-top: 36px;
+        margin-bottom: 6px;
+
+      @include mq($until: desktop) {
+        font-size: 24px;
+        line-height: 28px;
+      }
+    }
   
       .element--immersive {
           max-width: initial;
