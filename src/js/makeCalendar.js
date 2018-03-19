@@ -36,6 +36,7 @@ export default function makeCalendar(el){
       .data(function(d) { return d3.timeDays(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
     .enter()
       .append("rect")
+      .attr('id', format)
       .attr("class", "day")
       .attr("width", cellSize)
       .attr("height", cellSize)

@@ -55,11 +55,6 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
     console.log(dates)
   })
 
-  // console.log(csv.length)
-
-  // console.log(dates)
-
-
   //add back the weekend days
   dates = addsWeekends(dates);
 
@@ -119,6 +114,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
     // .draggable(true)
     .x(d => d.dateX)
     .y(d => d.dateY)
+    .on('drag', () => window.annotations = annotations)
     .annotations(annotations)
 
 
@@ -192,7 +188,11 @@ function initScroll() {
           .attr('width', cellSize)
     
 
+<<<<<<< HEAD
 
+=======
+          /* Swoopy arrows stuff */
+>>>>>>> 7c8434ef43d05a0979f3f8790ff31f07908d646a
           arrows.selectAll('path')
             .transition()
             .delay(0)
@@ -214,6 +214,13 @@ function initScroll() {
             .ease(d3.easeExpOut)
             .duration(4000)
             .attr('fill-opacity', 1)
+
+          /* Highilighting parts of calendar (not working) */
+          // d3.select('.gv-w').select("rect[id='2018-01-20']")
+          //   .attr('fill', d => console.log(this))
+          //   .attr('fill-opacity', 1)
+
+
   })
 }
 

@@ -37,11 +37,11 @@
 }
 
 .day {
-  // fill: #fff;
   stroke: #ccc;
 
   &.weekend {
-    fill: #eaeaea;
+    fill: #ccc;
+    fill-opacity: 0.4;
   }
   &.hasValues {
     stroke: yellow;
