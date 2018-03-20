@@ -71,7 +71,7 @@
 
 .main-container {
   display: flex;
-
+  // margin-bottom: 1000px;
 }
 
 .months-container {
@@ -96,11 +96,23 @@
   }
 }
 
+.squares-visible {
+  @for $i from 1 through 144 {
+    .dayData:nth-child(#{$i}n) {
+        fill-opacity: 0.9;
+        stroke-opacity: 0.7;
+        stroke-width: 0.6;
+        transition-delay: #{$i * 0.045}s;
+    }
+  }
+}
+
 .day {
   stroke: #ccc;
 
   &.weekend {
     fill: url(#diagonal-stripe-1);
+    fill-opacity: 0.2;
   }
   &.hasValues {
     stroke: yellow;
@@ -113,10 +125,11 @@
 }
 
 .dayData {
-  // fill-opacity: 0;
-  // fill: white;
-  // stroke: #000;
-  // stroke-width: 2px;
+  fill-opacity: 0;
+  stroke-opacity: 0;
+  stroke: white;
+  transition-property: all;
+  transition-timing-function: linear;
 
   .gv-w &{
     stroke: #ff7e00;

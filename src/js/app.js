@@ -8,7 +8,7 @@ const calcYDatePosition = (date, cellSize) => d3.timeWeek.count(d3.timeMonth(dat
 const isSameDay = (dateToCheck, actualDate) => { return dateToCheck.getDate() === actualDate.getDate() && dateToCheck.getMonth() === actualDate.getMonth() && dateToCheck.getFullYear() === actualDate.getFullYear()};
 
 // config variables
-const cellSize = 860/7;
+const cellSize = 121.4;
 const container = document.querySelector('.months-container');
 const domElements = document.querySelectorAll('.cal-month'); // months need to be named correctly in the css classes, all lowercase
 const genders = ['women', 'men'];
@@ -77,6 +77,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
   
   // addData(dates, totalWomenCounter);
   addData(dates, domElements);
+  
   initScroll(domElements, cellSize);
 
   /* Swoopy arrow stuff */
@@ -139,6 +140,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
 
 // should this take an array of month elements?
 const addData = (dates, domElements) => {
+  
   const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
   domElements.forEach(domElement => {
@@ -146,63 +148,78 @@ const addData = (dates, domElements) => {
     const firstDayOfMonth = new Date(2018, monthAsInt, 1);
     const lastDayOfMonth = d3.timeDays(firstDayOfMonth, new Date(2018, monthAsInt + 1, 1)).slice(-1)[0];
     
-    console.log(firstDayOfMonth)
-
     const firstDayIndex = dates.findIndex(d => isSameDay(d.date, firstDayOfMonth));
     const lastDayIndex = dates.findIndex(d => isSameDay(d.date, lastDayOfMonth));
 
     const filteredDates = dates.slice(firstDayIndex, lastDayIndex + 1);
+    d3.select(domElement).selectAll(".day-group").data(filteredDates);
 
-    d3.select(domElement).selectAll(".dayData").data(filteredDates);
-    d3.select(domElement).selectAll(".day").data(filteredDates);
+    d3.select(domElement).selectAll(".day-group")
+    // .attr('id', d => d['womenPaidLess'])
+    .selectAll("rect")
+      .data(d => {return new Array(d['womenPaidLess']).fill(d)})
+      .enter()
+        .append("rect")
+        .attr('class',  'dayData')
+        .attr('x', (d, i) => 0.8 + (i - 1) % 12 * 10) // 0.8 is to compensate the stroke width
+        .attr('y', (d, i) => -0.6 + cellSize - 10 - (Math.floor((i - 1) / 12) % 12) * 10) // 0.6 is to compensate the stroke width
+        .attr('height', cellSize / 12)
+        .attr('width', cellSize / 12)
+        .attr('fill', '#ff7e00')
+
+
     d3.select(domElement).selectAll(".day")
-    .classed('weekend', function(d, i){
-      return (d.isWeekend) ? true : false;
+    .classed('weekend', function(d) {
+      return d.isWeekend === true;
     })
   })
 }
 
 const initScroll = (domElements, cellSize) => {
+  const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+
   domElements.forEach(element => {
     const elemRect = element.getBoundingClientRect();
+    const monthAsInt = monthsArray.indexOf(element.classList[1]);
 
     window.addEventListener('scroll', () => {
-      const centroid = elemRect.top + elemRect.height / 2;
+      // const centroid = elemRect.top + elemRect.height / 2;
         const wTop = (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0)
-        const wHeight = window.innerHeight / 2;
+        const wHeight = (window.innerHeight) / 2;
         const windowCenter = wTop + wHeight;
         const d3Container = d3.select(container);
         const arrows = d3Container.selectAll('.swoopy-arrow-group');
 
-        d3.select(element).selectAll(".dayData")
-        .transition()
-        .delay(0)
-        .ease(d3.easeExpOut)
-        .duration(2500)
-          .attr('fill', '#ff7e00')
-          .attr('y', d => calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize - cellSize))
-          .attr('height', d => {
-            if (d['womenPaidLess'] > 0 && elemRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter) {
-              return d['womenPaidLess'] / 100 * cellSize;
-            } else {
-              return 0;
-            }
-          })
-          .attr('width', d => {
-            if (elemRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter) {
-              return d['womenPaidLess'] / 100 * cellSize;
-            } else {
-              return 0;
-            }
-          })
+        d3.select(element).selectAll(".day-group")
+          .classed('squares-visible', d => (elemRect.top + calcYDatePosition(d.date, cellSize)) < windowCenter)
+
+        // .duration(2500)
+        //   .attr('fill', '#ff7e00')
+        //   .attr('y', d => calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize - cellSize))
+          // .attr('height', d => {
+          //   if (d['womenPaidLess'] > 0 && elemRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter) {
+          //     return d['womenPaidLess'] / 100 * cellSize;
+          //   } else {
+          //     return 0;
+          //   }
+          // })
+          // .attr('height', 20)
+          // .attr('width', 20)
+          // .attr('width', d => {
+          //   if (elemRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter) {
+          //     return d['womenPaidLess'] / 100 * cellSize;
+          //   } else {
+          //     return 0;
+          //   }
+          // })
 
         d3.select(element).selectAll(".day")
           .transition()
           .delay(0)
           .ease(d3.easeExpOut)
           .duration(2000)
-          .attr('fill', d => d['womenPaidLess'] > 0 && elemRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter ? '#ff7e00': '#fff')
-          .attr('fill-opacity', 0.3)
+          .attr('fill', d => d['womenPaidLess'] > 0 && elemRect.top + calcYDatePosition(d.date, cellSize) < windowCenter ? '#2aadbc': '#fff')
+          .attr('fill-opacity', 0.1)
           .attr('height', cellSize)
           .attr('width', cellSize)
     
@@ -237,8 +254,6 @@ const initScroll = (domElements, cellSize) => {
     })
   })
 }
-
-
 
 const getTotalWeekDays = () => {
   var count = 365;
