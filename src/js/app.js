@@ -10,8 +10,10 @@ const isSameDay = (dateToCheck, actualDate) => { return dateToCheck.getDate() ==
 // config variables
 const cellSize = 80;
 const container = document.querySelector('.months-container');
+const counterSticky = document.querySelector('.counter-sticky');
 const domElements = document.querySelectorAll('.cal-month'); // months need to be named correctly in the css classes, all lowercase
 const genders = ['women', 'men'];
+let size = 0;
 
 
 makeMonthSvgs(domElements, cellSize);
@@ -155,14 +157,11 @@ const addData = (dates, domElements) => {
         d3.select(domElement).selectAll(".day-group").data(filteredDates);
 
         d3.select(domElement).selectAll(".day-group")
-            // .attr('id', d => d['womenPaidLess'])
             .selectAll("circle")
             .data(d => { return new Array(d['womenPaidLess']).fill(d) })
             .enter()
             .append("circle")
             .attr('class', 'dayData')
-            // .attr('cx', (d, i) => 0.8 + (i - 1) % 12 * 10) // 0.8 is to compensate the stroke width
-            // .attr('cy', (d, i) => -0.6 + cellSize - 10 - (Math.floor((i - 1) / 12) % 12) * 10) // 0.6 is to compensate the stroke width
             .attr('cx', () => calcCirclePos())
             .attr('cy', () => calcCirclePos())
             .attr('r', 0)
@@ -186,8 +185,22 @@ const initScroll = (domElements, cellSize) => {
 
     domElements.forEach(element => {
         const monthAsInt = monthsArray.indexOf(element.classList[1]);
-
+      
         window.addEventListener('scroll', () => {
+            d3.select(counterSticky)
+            .transition()
+            .duration(500)
+            .delay(0)
+            .tween('text', function() {
+              const currentVal = this.textContent;
+              const i = d3.interpolate(currentVal, size)
+              return (t) => {
+                d3.select(counterSticky).text(parseInt(i(t)));
+              }
+            });
+
+
+
             element.querySelectorAll(".week-group").forEach(group => {
                 const elemRect = group.getBoundingClientRect();
                 // const centroid = elemRect.top + elemRect.height / 2;
@@ -199,61 +212,41 @@ const initScroll = (domElements, cellSize) => {
 
                 if (d3.select(group).attr("data-transitioned") !== "yes" && elemRect.top < 500) {
                     d3.select(group).attr("data-transitioned", "yes");
-
-                    // d3.select(group).selectAll("rect")
-                    //     .transition()
-                    //     .delay((d, i) => i * 100)
-                    //     .ease(d3.easeExpOut)
-                    //     .duration(2000)
-                    //     .style("fill", "#f6f6f6");
-
-                    d3.select(group).selectAll("text")
-                        .transition()
-                        .delay((d, i) => i * 100)
-                        .ease(d3.easeExpOut)
-                        .duration(2000)
-                        .style("opacity", "1");
+                    size += d3.select(group).selectAll(".dayData").size();
 
                     d3.select(group).selectAll(".dayData")
-                        .transition()
-                        .delay(0)
-                        .ease(d3.easeExpOut)
-                        .duration(2000)
-                        .attr('cx', () => calcCirclePos())
-                        .attr('cy', () => calcCirclePos())
-                        .style("opacity", "1")
-                        .attr('r', cellSize / 24)
-
-
+                      .transition()
+                      .delay(0)
+                      .ease(d3.easeExpOut)
+                      .duration(1000)
+                      .attr('cx', () => calcCirclePos())
+                      .attr('cy', () => calcCirclePos())
+                      .style("opacity", "1")
+                      .attr('r', cellSize / 24)
                 }
+
+                if (d3.select(group).attr("data-transitioned") === "yes" && elemRect.top > 500) {
+                  d3.select(group).attr("data-transitioned", "no");
+                  size -= d3.select(group).selectAll(".dayData").size();
+                }
+
+                if (elemRect.top > 500) {
+                  d3.select(group).selectAll(".dayData")
+                    .transition()
+                    .delay(0)
+                    .ease(d3.easeExpOut)
+                    .duration(2000)
+                    .style("opacity", "1")
+                    .attr('r', 0) 
+                }
+  
+                d3.select(group).selectAll("text")
+                    .transition()
+                    .delay((d, i) => i * 100)
+                    .ease(d3.easeExpOut)
+                    .duration(2000)
+                    .style("opacity", d => elemRect.top < 500 ? "1" : "0");
             });
-
-            // const transitioned = d3.select(element).attr("data-transitioned");
-
-            // d3.select(element).selectAll(".day-group")
-            //     .classed('squares-visible', d => (elemRect.top + calcYDatePosition(d.date, cellSize)) < windowCenter)
-
-            // .duration(2500)
-            //   .attr('fill', '#ff7e00')
-            //   .attr('y', d => calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize - cellSize))
-            // .attr('height', d => {
-            //   if (d['womenPaidLess'] > 0 && elemRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter) {
-            //     return d['womenPaidLess'] / 100 * cellSize;
-            //   } else {
-            //     return 0;
-            //   }
-            // })
-            // .attr('height', 20)
-            // .attr('width', 20)
-            // .attr('width', d => {
-            //   if (elemRect.top + calcYDatePosition(d.date, cellSize) - (d['womenPaidLess'] / 100 * cellSize + cellSize) < windowCenter) {
-            //     return d['womenPaidLess'] / 100 * cellSize;
-            //   } else {
-            //     return 0;
-            //   }
-            // })
-
-
 
             /* Swoopy arrows stuff */
             // arrows.selectAll('path')
