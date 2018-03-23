@@ -27,6 +27,27 @@
     }
 }
 
+.counter-container {
+  position: absolute;
+  height: 80px;
+  left: 568px;
+}
+
+.counter-sticky {
+  position: fixed;
+  // .number {
+    // display: inline-block;
+    background: #000;
+    color: #fff;
+    // min-width: 75px;
+    text-align: center;
+    @include fs-titlepiece(2);
+    font-size: 24px;
+    line-height: 24px;
+    padding: 10px;
+  // }
+}
+
 .months-container {
     margin-top: 100px;
 }
@@ -67,7 +88,7 @@
 .day-group {
     &.weekend {
         rect {
-            fill: url(#diagonal-stripe-1) !important;
+            fill: #ccc !important;
             fill-opacity: 0.2;
         }
     }
