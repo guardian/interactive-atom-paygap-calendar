@@ -11,6 +11,9 @@ const isSameDay = (dateToCheck, actualDate) => { return dateToCheck.getDate() ==
 const cellSize = 80;
 const cellSizeMargin = 70;
 const container = document.querySelector('.months-container');
+const december = document.querySelector('.december');
+const november = document.querySelector('.november');
+
 const counterSticky = document.querySelector('.counter-sticky');
 const domElements = document.querySelectorAll('.cal-month'); // months need to be named correctly in the css classes, all lowercase
 const genders = ['women', 'men'];
@@ -97,59 +100,53 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
 
     /* Swoopy arrow stuff */
 
-    // const earliestDay = dates.find(obj => obj.womenPaidLess > 0);
+    const annotations = [
+    {
+      "dateX": 40,
+      "dateY": -224,
+      "path": "M-21,274C-21,315,-10,350,50,357",
+      "text": "These are the companies that stop paying women one day earlier than men",
+      "textOffset": [
+        -34,
+        261
+      ]
+    }
+  ]
 
-    // const annotations = [
-    //   {
-    //     "dateX": 90,
-    //     "dateY": 600,
-    //     "path": "M-21,519C-21,589,16,639,83,653",
-    //     "text": "The earliest date at which women would start working for free",
-    //     "textOffset": [
-    //       -72,
-    //       508
-    //     ]
-    //   }
-    // ]
+    const decemberSvg = d3.select(december)
+      .select("svg")
 
-    // const womenSvg = d3.select(container)
-    //   .select("svg")
-    //   .style("overflow", "visible")
+    const swoopy = swoopyDrag()
+      // .draggable(true)
+      .x(d => d.dateX)
+      .y(d => d.dateY)
+      .on('drag', () => window.annotations = annotations)
+      .annotations(annotations)
 
-    //   womenSvg
-    //   .append('marker')
-    //   .attr('id', 'arrow')
-    //   .attr('fill-opacity', 0)
-    //   .attr('viewBox', '-10 -10 20 20')
-    //   .attr('markerWidth', 10)
-    //   .attr('markerHeight', 20)
-    //   .attr('orient', 'auto')
-    //   .append('path')
-    //   .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
+    const swoopySel = decemberSvg.select('.swoopy-arrow-group').call(swoopy);
 
-    // const swoopy = swoopyDrag()
-    //   // .draggable(true)
-    //   .x(d => d.dateX)
-    //   .y(d => d.dateY)
-    //   .on('drag', () => window.annotations = annotations)
-    //   .annotations(annotations)
+    // arrow path
+    swoopySel.selectAll('path')
+    // .attr('class', d => `swoopy-path-${d.dateY}`)
+    .attr('fill', 'none')
+    .attr('stroke', '#000')
+    .attr('stroke-opacity', 0)
+    .attr('marker-end', 'url(#arrow)')
 
+    // arrow tip
+    decemberSvg
+      .append('marker')
+      .attr('id', 'arrow')
+      .attr('fill-opacity', 0)
+      .attr('viewBox', '-10 -10 20 20')
+      .attr('markerWidth', 10)
+      .attr('markerHeight', 20)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
 
-    // const swoopySel = womenSvg.append('g')
-    //   .classed('swoopy-arrow-group', true)
-    //   .call(swoopy);
-
-    // swoopySel.selectAll('path')
-    // // .attr('class', d => `swoopy-path-${d.dateY}`)
-    // .attr('fill', 'none')
-    // .attr('stroke', '#000')
-    // .attr('stroke-opacity', 0)
-    // .attr('marker-end', 'url(#arrow)')
-
-    // swoopySel.selectAll('text')
-    //   .attr('fill-opacity', 0)
-
-    // initScroll(dates);
+    swoopySel.selectAll('text')
+      .attr('fill-opacity', 0)
 });
 
 
@@ -375,9 +372,8 @@ const calcCirclePos = (d, i, a, xOrY) => {
 
 const onScroll = (domElements, cellSize) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
-
     let shouldBreak = false;
-
+    
     domElements.forEach(element => {
         if (shouldBreak) {
             return;
@@ -402,15 +398,9 @@ const onScroll = (domElements, cellSize) => {
         }
 
         element.weekEls.forEach(group => {
-            const elemRect = group.getBoundingClientRect();
-            // const centroid = elemRect.top + elemRect.height / 2;
-            // const wTop = (window.pageYOffset || document.documentElement.scrollTop) - (document.documentElement.clientTop || 0)
-            // const wHeight = (window.innerHeight) / 2;
-            // const windowCenter = wTop + wHeight;
-            // const d3Container = d3.select(container);
-            // const arrows = d3Container.selectAll('.swoopy-arrow-group');
+            const groupRect = group.getBoundingClientRect();
 
-            if (d3.select(group).attr("data-transitioned") !== "yes" && elemRect.top < 500) {
+            if (d3.select(group).attr("data-transitioned") !== "yes" && groupRect.top < 500) {
                 d3.select(group).attr("data-transitioned", "yes");
                 size += d3.select(group).selectAll(".dayData").size();
 
@@ -426,10 +416,10 @@ const onScroll = (domElements, cellSize) => {
                         return "none";
                     })
                     .style("opacity", "1")
-                    // .attr('r', 3)
-                shouldBreak = true;
-                return;
-            } else if (d3.select(group).attr("data-transitioned") === "yes" && elemRect.top > 500) {
+                    .attr('r', 2.5)
+            }
+
+            if (d3.select(group).attr("data-transitioned") === "yes" && groupRect.top > 500) {
                 d3.select(group).attr("data-transitioned", "no");
                 size -= d3.select(group).selectAll(".dayData").size();
 
@@ -444,6 +434,32 @@ const onScroll = (domElements, cellSize) => {
 
                 shouldBreak = true;
             }
+            /* Swoopy arrows stuff */
+            const elemRect = element.getBoundingClientRect();
+            const arrows = d3.select(element).select('.swoopy-arrow-group');
+
+            arrows.selectAll('path')
+                .transition()
+                .delay(0)
+                .ease(d3.easeExpOut)
+                .duration(2000)
+                .attr('stroke-opacity', elemRect.top < 396 ? 1 : 0)
+                .attr('marker-end', 'url(#arrow)')
+
+            arrows.selectAll('text')
+                .transition()
+                .delay(0)
+                .ease(d3.easeExpOut)
+                .duration(2000)
+                .attr('fill-opacity', elemRect.top < 396 ? 1 : 0)
+
+            d3.select(element).selectAll('marker')
+                .transition()
+                .delay(0)
+                .ease(d3.easeExpOut)
+                .duration(2000)
+                .attr('fill-opacity', elemRect.top < 396 ? 1 : 0)
+
             // if (elemRect.top > 500) {
             //     d3.select(group).selectAll(".dayData")
             //         .transition()
