@@ -159,54 +159,56 @@ const addData = (dates, domElements) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
     domElements.forEach(domElement => {
-        const monthAsInt = monthsArray.indexOf(domElement.classList[1]);
-        const firstDayOfMonth = new Date(2018, monthAsInt, 1);
-        const lastDayOfMonth = d3.timeDays(firstDayOfMonth, new Date(2018, monthAsInt + 1, 1)).slice(-1)[0];
+        window.requestAnimationFrame(() => {
+            const monthAsInt = monthsArray.indexOf(domElement.classList[1]);
+            const firstDayOfMonth = new Date(2018, monthAsInt, 1);
+            const lastDayOfMonth = d3.timeDays(firstDayOfMonth, new Date(2018, monthAsInt + 1, 1)).slice(-1)[0];
 
-        const firstDayIndex = dates.findIndex(d => isSameDay(d.date, firstDayOfMonth));
-        const lastDayIndex = dates.findIndex(d => isSameDay(d.date, lastDayOfMonth));
+            const firstDayIndex = dates.findIndex(d => isSameDay(d.date, firstDayOfMonth));
+            const lastDayIndex = dates.findIndex(d => isSameDay(d.date, lastDayOfMonth));
 
-        const filteredDates = dates.slice(firstDayIndex, lastDayIndex + 1);
-        d3.select(domElement).selectAll(".day-group").data(filteredDates);
+            const filteredDates = dates.slice(firstDayIndex, lastDayIndex + 1);
+            d3.select(domElement).selectAll(".day-group").data(filteredDates);
 
-        d3.select(domElement).selectAll(".day-group")
-            .selectAll("circle")
-            .data(d => { return new Array(d['womenPaidLess']).fill(d) })
-            .enter()
-            .append("circle")
-            .attr('class', 'dayData')
-            .attr('fill', '#ff7e00')
-            .attr('opacity', 0)
-            .attr('r', 2.5)
-            .style("transform", d => {
-                const x = (Math.random() - 0.5) * 10;
-                const y = (Math.random() - 0.5) * 10;
-                return `translate(${x}px,${y}px)`;
-            })
-            .each(function(d, i, a) {
-                const node = d3.select(this);
+            d3.select(domElement).selectAll(".day-group")
+                .selectAll("circle")
+                .data(d => { return new Array(d['womenPaidLess']).fill(d) })
+                .enter()
+                .append("circle")
+                .attr('class', 'dayData')
+                .attr('fill', '#ff7e00')
+                .attr('opacity', 0)
+                .attr('r', 2.5)
+                .style("transform", d => {
+                    const x = (Math.random() - 0.5) * 10;
+                    const y = (Math.random() - 0.5) * 10;
+                    return `translate(${x}px,${y}px)`;
+                })
+                .each(function(d, i, a) {
+                    const node = d3.select(this);
 
-                if (i === 0) {
-                    const count = d.womenPaidLess;
+                    if (i === 0) {
+                        const count = d.womenPaidLess;
 
-                    const grid = Math.ceil(Math.sqrt(count));
+                        const grid = Math.ceil(Math.sqrt(count));
 
-                    sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin / (grid * 1.28)));
-                }
+                        sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin / (grid * 1.28)));
+                    }
 
-                var s = sampler();
+                    var s = sampler();
 
-                node.attr('cx', (d, i, a) => {
-                        return s[0] + 5;
-                    })
-                    .attr('cy', (d, i, a) => s[1] + 5)
-            });
+                    node.attr('cx', (d, i, a) => {
+                            return s[0] + 5;
+                        })
+                        .attr('cy', (d, i, a) => s[1] + 5)
+                });
 
 
-        d3.select(domElement).selectAll(".day-group")
-            .classed('weekend', function(d) {
-                return d.isWeekend === true;
-            })
+            d3.select(domElement).selectAll(".day-group")
+                .classed('weekend', function(d) {
+                    return d.isWeekend === true;
+                })
+        });
     })
 }
 
@@ -425,18 +427,18 @@ const onScroll = (domElements, cellSize) => {
                 size -= d3.select(group).selectAll(".dayData").size();
             }
 
-            if (elemRect.top > 500) {
-                d3.select(group).selectAll(".dayData")
-                    .transition()
-                    .delay(i => {
-                        return Math.random() * 500;
-                    })
-                    .ease(d3.easeExpOut)
-                    .duration(250)
-                    .style("opacity", "0")
-                    .attr('r', 2.5)
+            // if (elemRect.top > 500) {
+            //     d3.select(group).selectAll(".dayData")
+            //         .transition()
+            //         .delay(i => {
+            //             return Math.random() * 500;
+            //         })
+            //         .ease(d3.easeExpOut)
+            //         .duration(250)
+            //         .style("opacity", "0")
+            //         .attr('r', 2.5)
 
-            }
+            // }
 
             // d3.select(group).selectAll("text")
             //     .transition()
