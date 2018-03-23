@@ -164,7 +164,13 @@ const addData = (dates, domElements) => {
             .append("circle")
             .attr('class', 'dayData')
             .attr('fill', '#ff7e00')
-            // .attr('opacity', 0)
+            .attr('opacity', 0)
+            .attr('r', 2.5)
+            .style("transform", d => {
+                const x = (Math.random() - 0.5) * 10;
+                const y = (Math.random() - 0.5) * 10;
+                return `translate(${x}px,${y}px)`;
+            })
             .each(function(d, i, a) {
                 const node = d3.select(this);
 
@@ -173,7 +179,7 @@ const addData = (dates, domElements) => {
 
                     const grid = Math.ceil(Math.sqrt(count));
 
-                    sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin/(grid*1.28)));
+                    sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin / (grid * 1.28)));
                 }
 
                 var s = sampler();
@@ -358,19 +364,19 @@ const initScroll = (domElements, cellSize) => {
 
     domElements.forEach(element => {
         const monthAsInt = monthsArray.indexOf(element.classList[1]);
-      
+
         window.addEventListener('scroll', () => {
             d3.select(counterSticky)
-            .transition()
-            .duration(500)
-            .delay(0)
-            .tween('text', function() {
-              const currentVal = this.textContent;
-              const i = d3.interpolate(currentVal, size)
-              return (t) => {
-                d3.select(counterSticky).text(parseInt(i(t)));
-              }
-            });
+                .transition()
+                .duration(500)
+                .delay(0)
+                .tween('text', function() {
+                    const currentVal = this.textContent;
+                    const i = d3.interpolate(currentVal, size)
+                    return (t) => {
+                        d3.select(counterSticky).text(parseInt(i(t)));
+                    }
+                });
 
 
 
@@ -387,38 +393,45 @@ const initScroll = (domElements, cellSize) => {
                     d3.select(group).attr("data-transitioned", "yes");
                     size += d3.select(group).selectAll(".dayData").size();
 
-                    d3.select(group).selectAll(".dayData")
+                    d3.select(group).selectAll(".day-group").selectAll(".dayData")
                         .transition()
-                        .delay(0)
+                        .delay((d, i, a) => {
+                            // console.log(d3.easeCubicIn((i / a.length)));
+                            return d3.easeCubicIn((i / a.length)) * 1000;
+                        })
                         .ease(d3.easeExpOut)
-                        .duration(1000)
-                        // .attr('cx', (d, i, a) => calcCirclePos(d, i, a, "x"))
-                        // .attr('cy', (d, i, a) => calcCirclePos(d, i, a, "y"))
+                        .duration(500)
+                        .style("transform", d => {
+                            return `translate(${0}px,${0}px)`;
+                        })
                         .style("opacity", "1")
                         .attr('r', 2.5)
                 }
 
                 if (d3.select(group).attr("data-transitioned") === "yes" && elemRect.top > 500) {
-                  d3.select(group).attr("data-transitioned", "no");
-                  size -= d3.select(group).selectAll(".dayData").size();
+                    d3.select(group).attr("data-transitioned", "no");
+                    size -= d3.select(group).selectAll(".dayData").size();
                 }
 
                 if (elemRect.top > 500) {
-                  d3.select(group).selectAll(".dayData")
-                    .transition()
-                    .delay(0)
-                    .ease(d3.easeExpOut)
-                    .duration(2000)
-                    .style("opacity", "1")
-                    .attr('r', 0) 
+                    d3.select(group).selectAll(".dayData")
+                        .transition()
+                        .delay(i => {
+                            return Math.random() * 500;
+                        })
+                        .ease(d3.easeExpOut)
+                        .duration(250)
+                        .style("opacity", "0")
+                        .attr('r', 2.5)
+
                 }
-  
-                d3.select(group).selectAll("text")
-                    .transition()
-                    .delay((d, i) => i * 100)
-                    .ease(d3.easeExpOut)
-                    .duration(2000)
-                    .style("opacity", d => elemRect.top < 500 ? "1" : "0");
+
+                // d3.select(group).selectAll("text")
+                //     .transition()
+                //     .delay((d, i) => i * 100)
+                //     .ease(d3.easeExpOut)
+                //     .duration(2000)
+                //     .style("opacity", d => elemRect.top < 500 ? "1" : "0");
             });
 
             /* Swoopy arrows stuff */

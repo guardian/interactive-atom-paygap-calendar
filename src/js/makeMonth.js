@@ -69,7 +69,7 @@ const makeMonthSvgs = (domElements, cellSize) => {
                     .attr('y', 16)
                     .attr('x', 4)
                     .classed('date-label', true)
-                    .style("opacity", "0")
+                    .style("opacity", "1")
             });
 
 
