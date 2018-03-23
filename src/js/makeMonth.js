@@ -2,7 +2,7 @@ import * as d3 from "d3";
 
 const makeMonthSvgs = (domElements, cellSize) => {
     const width = cellSize * 7;
-    const height = cellSize * 5;
+    const height = cellSize * 6;
     const format = d3.timeFormat("%Y-%m-%d");
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
@@ -33,22 +33,24 @@ const makeMonthSvgs = (domElements, cellSize) => {
         }
 
         const svg = d3.select(domElement).selectAll("svg")
-            .data(d3.range(2018, 2019))
-            .enter().append("svg")
+          .data(d3.range(2018, 2019))
+          .enter().append("svg")
             .attr("width", width)
             .attr("height", height)
             .attr("class", "month-svg")
-            .append("g")
+            .style("overflow", "visible")
+
+
 
         //day rects
         svg.selectAll(".day")
-            .data(e => { return d3.nest().key(d => d3.timeWeek.count(d3.timeMonth(d), d)).entries(d3.timeDays(new Date(2018, monthAsInt, 1), new Date(2018, monthAsInt + 1, 1))) })
-            .enter()
+          .data(e => { return d3.nest().key(d => d3.timeWeek.count(d3.timeMonth(d), d)).entries(d3.timeDays(new Date(2018, monthAsInt, 1), new Date(2018, monthAsInt + 1, 1))) })
+          .enter()
             .append('g')
             .classed('week-group', true)
             .selectAll('g')
-            .data(d => d.values)
-            .enter()
+          .data(d => d.values)
+          .enter()
             .append('g')
             .attr("class", "day-group")
             .attr('transform', d => `translate(${d.getDay() * cellSize}, ${d3.timeWeek.count(d3.timeMonth(d), d) * cellSize})`)
@@ -71,22 +73,8 @@ const makeMonthSvgs = (domElements, cellSize) => {
                     .classed('date-label', true)
                     .style("opacity", "0")
             });
-
-
-        // the data squares that the data is going to alter
-        // svg.selectAll(".dayData")
-        // .data(d => d3.timeDays(new Date(d, 0, 1), new Date(d + 1, 0, 1)))
-        //   .data(d => {console.log(d); return d3.timeDays(new Date(2018, monthAsInt, 1), new Date(2018, monthAsInt + 1, 1))})
-        // .enter()
-        //   .append("rect")
-        //   .attr("class", "dayData")
-        //   .attr('id', d => `dayData-${format(d)}`)
-        //   .attr("width", 0)
-        //   .attr("height", 0)
-        //   .attr("y", d => {return d3.timeWeek.count(d3.timeMonth(d), d) * cellSize + cellSize})
-        //   .attr("x", d => d.getDay() * cellSize)
-
-
+          
+      svg.append('g').classed('swoopy-arrow-group', true)
         //Adds month path. Enable this once the monthpath function works correctly
 
         // svg.selectAll(".month")
