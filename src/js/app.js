@@ -15,6 +15,7 @@ const counterSticky = document.querySelector('.counter-sticky');
 const domElements = document.querySelectorAll('.cal-month'); // months need to be named correctly in the css classes, all lowercase
 const genders = ['women', 'men'];
 let size = 0;
+let lastScroll = null;
 
 
 makeMonthSvgs(domElements, cellSize);
@@ -81,7 +82,18 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
     // addData(dates, totalWomenCounter);
     addData(dates, domElements);
 
-    initScroll(domElements, cellSize);
+    function checkScroll() {
+        if (lastScroll !== window.pageYOffset) {
+            onScroll(domElements, cellSize);
+            lastScroll = window.pageYOffset;
+        }
+        window.requestAnimationFrame(() => {
+            checkScroll();
+        });
+    }
+
+    // initScroll(domElements, cellSize);
+    checkScroll();
 
     /* Swoopy arrow stuff */
 
@@ -359,111 +371,113 @@ const calcCirclePos = (d, i, a, xOrY) => {
     return sampled;
 }
 
-const initScroll = (domElements, cellSize) => {
+const onScroll = (domElements, cellSize) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
     domElements.forEach(element => {
         const monthAsInt = monthsArray.indexOf(element.classList[1]);
 
-        window.addEventListener('scroll', () => {
-            d3.select(counterSticky)
-                .transition()
-                .duration(500)
-                .delay(0)
-                .tween('text', function() {
-                    const currentVal = this.textContent;
-                    const i = d3.interpolate(currentVal, size)
-                    return (t) => {
-                        d3.select(counterSticky).text(parseInt(i(t)));
-                    }
-                });
 
-
-
-            element.querySelectorAll(".week-group").forEach(group => {
-                const elemRect = group.getBoundingClientRect();
-                // const centroid = elemRect.top + elemRect.height / 2;
-                const wTop = (window.pageYOffset || document.documentElement.scrollTop) - (document.documentElement.clientTop || 0)
-                const wHeight = (window.innerHeight) / 2;
-                const windowCenter = wTop + wHeight;
-                const d3Container = d3.select(container);
-                const arrows = d3Container.selectAll('.swoopy-arrow-group');
-
-                if (d3.select(group).attr("data-transitioned") !== "yes" && elemRect.top < 500) {
-                    d3.select(group).attr("data-transitioned", "yes");
-                    size += d3.select(group).selectAll(".dayData").size();
-
-                    d3.select(group).selectAll(".day-group").selectAll(".dayData")
-                        .transition()
-                        .delay((d, i, a) => {
-                            // console.log(d3.easeCubicIn((i / a.length)));
-                            return d3.easeCubicIn((i / a.length)) * 1000;
-                        })
-                        .ease(d3.easeExpOut)
-                        .duration(500)
-                        .style("transform", d => {
-                            return `translate(${0}px,${0}px)`;
-                        })
-                        .style("opacity", "1")
-                        .attr('r', 2.5)
+        d3.select(counterSticky)
+            .transition()
+            .duration(500)
+            .delay(0)
+            .tween('text', function() {
+                const currentVal = this.textContent;
+                const i = d3.interpolate(currentVal, size)
+                return (t) => {
+                    d3.select(counterSticky).text(parseInt(i(t)));
                 }
-
-                if (d3.select(group).attr("data-transitioned") === "yes" && elemRect.top > 500) {
-                    d3.select(group).attr("data-transitioned", "no");
-                    size -= d3.select(group).selectAll(".dayData").size();
-                }
-
-                if (elemRect.top > 500) {
-                    d3.select(group).selectAll(".dayData")
-                        .transition()
-                        .delay(i => {
-                            return Math.random() * 500;
-                        })
-                        .ease(d3.easeExpOut)
-                        .duration(250)
-                        .style("opacity", "0")
-                        .attr('r', 2.5)
-
-                }
-
-                // d3.select(group).selectAll("text")
-                //     .transition()
-                //     .delay((d, i) => i * 100)
-                //     .ease(d3.easeExpOut)
-                //     .duration(2000)
-                //     .style("opacity", d => elemRect.top < 500 ? "1" : "0");
             });
 
-            /* Swoopy arrows stuff */
-            // arrows.selectAll('path')
-            //   .transition()
-            //   .delay(0)
-            //   .ease(d3.easeExpOut)
-            //   .duration(4000)
-            //   .attr('stroke-opacity', d => elemRect.top + 508 < windowCenter ? 1 : 0)
-            //   .attr('marker-end', 'url(#arrow)')
 
-            // arrows.selectAll('text')
-            //   .transition()
-            //   .delay(0)
-            //   .ease(d3.easeExpOut)
-            //   .duration(4000)
-            //   .attr('fill-opacity', 1)
 
-            // d3Container.selectAll('marker')
-            //   .transition()
-            //   .delay(0)
-            //   .ease(d3.easeExpOut)
-            //   .duration(4000)
-            //   .attr('fill-opacity', 1)
+        element.querySelectorAll(".week-group").forEach(group => {
+            const elemRect = group.getBoundingClientRect();
+            // const centroid = elemRect.top + elemRect.height / 2;
+            const wTop = (window.pageYOffset || document.documentElement.scrollTop) - (document.documentElement.clientTop || 0)
+            const wHeight = (window.innerHeight) / 2;
+            const windowCenter = wTop + wHeight;
+            const d3Container = d3.select(container);
+            const arrows = d3Container.selectAll('.swoopy-arrow-group');
 
-            /* Highilighting parts of calendar (not working) */
-            // d3.select('.gv-w').select("rect[id='2018-01-20']")
-            //   .attr('fill', d => console.log(this))
-            //   .attr('fill-opacity', 1)
-        })
-    })
+            if (d3.select(group).attr("data-transitioned") !== "yes" && elemRect.top < 500) {
+                d3.select(group).attr("data-transitioned", "yes");
+                size += d3.select(group).selectAll(".dayData").size();
+
+                d3.select(group).selectAll(".day-group").selectAll(".dayData")
+                    .transition()
+                    .delay((d, i, a) => {
+                        // console.log(d3.easeCubicIn((i / a.length)));
+                        return d3.easeCubicIn((i / a.length)) * 1000;
+                    })
+                    .ease(d3.easeExpOut)
+                    .duration(500)
+                    .style("transform", d => {
+                        return `translate(${0}px,${0}px)`;
+                    })
+                    .style("opacity", "1")
+                    .attr('r', 2.5)
+            }
+
+            if (d3.select(group).attr("data-transitioned") === "yes" && elemRect.top > 500) {
+                d3.select(group).attr("data-transitioned", "no");
+                size -= d3.select(group).selectAll(".dayData").size();
+            }
+
+            if (elemRect.top > 500) {
+                d3.select(group).selectAll(".dayData")
+                    .transition()
+                    .delay(i => {
+                        return Math.random() * 500;
+                    })
+                    .ease(d3.easeExpOut)
+                    .duration(250)
+                    .style("opacity", "0")
+                    .attr('r', 2.5)
+
+            }
+
+            // d3.select(group).selectAll("text")
+            //     .transition()
+            //     .delay((d, i) => i * 100)
+            //     .ease(d3.easeExpOut)
+            //     .duration(2000)
+            //     .style("opacity", d => elemRect.top < 500 ? "1" : "0");
+        });
+
+        /* Swoopy arrows stuff */
+        // arrows.selectAll('path')
+        //   .transition()
+        //   .delay(0)
+        //   .ease(d3.easeExpOut)
+        //   .duration(4000)
+        //   .attr('stroke-opacity', d => elemRect.top + 508 < windowCenter ? 1 : 0)
+        //   .attr('marker-end', 'url(#arrow)')
+
+        // arrows.selectAll('text')
+        //   .transition()
+        //   .delay(0)
+        //   .ease(d3.easeExpOut)
+        //   .duration(4000)
+        //   .attr('fill-opacity', 1)
+
+        // d3Container.selectAll('marker')
+        //   .transition()
+        //   .delay(0)
+        //   .ease(d3.easeExpOut)
+        //   .duration(4000)
+        //   .attr('fill-opacity', 1)
+
+        /* Highilighting parts of calendar (not working) */
+        // d3.select('.gv-w').select("rect[id='2018-01-20']")
+        //   .attr('fill', d => console.log(this))
+        //   .attr('fill-opacity', 1)
+    });
+
 }
+
+
 
 const getTotalWeekDays = () => {
     var count = 365;
