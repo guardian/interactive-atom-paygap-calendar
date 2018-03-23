@@ -28,14 +28,14 @@
 }
 
 .counter-container {
-  position: absolute;
-  height: 80px;
-  left: 568px;
+    position: absolute;
+    height: 80px;
+    left: 568px;
 }
 
 .counter-sticky {
-  position: fixed;
-  // .number {
+    position: fixed;
+    // .number {
     // display: inline-block;
     background: #000;
     color: #fff;
@@ -45,7 +45,7 @@
     font-size: 24px;
     line-height: 24px;
     padding: 10px;
-  // }
+    // }
 }
 
 .months-container {
@@ -122,6 +122,11 @@
     fill: none;
     stroke: #000;
     stroke-width: 2px;
+}
+
+.month-svg {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
 }
 
 .gv-totals {

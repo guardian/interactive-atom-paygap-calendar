@@ -178,7 +178,7 @@ const addData = (dates, domElements) => {
                 .attr('class', 'dayData')
                 .attr('fill', '#ff7e00')
                 .attr('opacity', 0)
-                .attr('r', 2.5)
+                .attr('r', 3)
                 .style("transform", d => {
                     const x = (Math.random() - 0.5) * 10;
                     const y = (Math.random() - 0.5) * 10;
@@ -376,9 +376,13 @@ const calcCirclePos = (d, i, a, xOrY) => {
 const onScroll = (domElements, cellSize) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
-    domElements.forEach(element => {
-        const monthAsInt = monthsArray.indexOf(element.classList[1]);
+    let shouldBreak = false;
 
+    domElements.forEach(element => {
+        if (shouldBreak) {
+            return;
+        }
+        const monthAsInt = monthsArray.indexOf(element.classList[1]);
 
         d3.select(counterSticky)
             .transition()
@@ -392,16 +396,19 @@ const onScroll = (domElements, cellSize) => {
                 }
             });
 
+        if (!element.weekEls) {
+            console.log("f")
+            element.weekEls = element.querySelectorAll(".week-group");
+        }
 
-
-        element.querySelectorAll(".week-group").forEach(group => {
+        element.weekEls.forEach(group => {
             const elemRect = group.getBoundingClientRect();
             // const centroid = elemRect.top + elemRect.height / 2;
-            const wTop = (window.pageYOffset || document.documentElement.scrollTop) - (document.documentElement.clientTop || 0)
-            const wHeight = (window.innerHeight) / 2;
-            const windowCenter = wTop + wHeight;
-            const d3Container = d3.select(container);
-            const arrows = d3Container.selectAll('.swoopy-arrow-group');
+            // const wTop = (window.pageYOffset || document.documentElement.scrollTop) - (document.documentElement.clientTop || 0)
+            // const wHeight = (window.innerHeight) / 2;
+            // const windowCenter = wTop + wHeight;
+            // const d3Container = d3.select(container);
+            // const arrows = d3Container.selectAll('.swoopy-arrow-group');
 
             if (d3.select(group).attr("data-transitioned") !== "yes" && elemRect.top < 500) {
                 d3.select(group).attr("data-transitioned", "yes");
@@ -416,17 +423,27 @@ const onScroll = (domElements, cellSize) => {
                     .ease(d3.easeExpOut)
                     .duration(500)
                     .style("transform", d => {
-                        return `translate(${0}px,${0}px)`;
+                        return "none";
                     })
                     .style("opacity", "1")
-                    .attr('r', 2.5)
-            }
-
-            if (d3.select(group).attr("data-transitioned") === "yes" && elemRect.top > 500) {
+                    // .attr('r', 3)
+                shouldBreak = true;
+                return;
+            } else if (d3.select(group).attr("data-transitioned") === "yes" && elemRect.top > 500) {
                 d3.select(group).attr("data-transitioned", "no");
                 size -= d3.select(group).selectAll(".dayData").size();
-            }
 
+                d3.select(group).selectAll(".dayData")
+                    .transition()
+                    .delay(i => {
+                        return Math.random() * 500;
+                    })
+                    .ease(d3.easeExpOut)
+                    .duration(250)
+                    .style("opacity", "0")
+
+                shouldBreak = true;
+            }
             // if (elemRect.top > 500) {
             //     d3.select(group).selectAll(".dayData")
             //         .transition()
