@@ -1,101 +1,152 @@
 @import "mq";
 @import "fonts";
 @import "palette";
-
 // Uncomment for embeds
 //@import "embed";
-
 // Uncomment for full screen (including immersive article main media)
 //@import "fullscreen";
-
 .element-atom,
 .interactive-atom {
     margin: 0 !important;
     overflow: hidden;
 }
 
-.main-container {
-  display: flex;
-  padding: 0 40px;
+@import "mq";
+@import "enhancer";
+.counter {
+    .number {
+        display: inline-block;
+        background: #cc0a11;
+        color: #fff;
+        min-width: 75px;
+        text-align: center;
+        @include fs-titlepiece(4);
+        font-size: 96px;
+        line-height: 96px;
+        padding: 10px;
+    }
 }
 
-.text-column-container {
-    p {
-    margin-top: 80px;
-    padding-left: 40px;
-    font-size: 18px;
-  }
+.counter-container {
+    position: absolute;
+    height: 80px;
+    left: 568px;
+}
+
+.counter-sticky {
+    position: fixed;
+    // .number {
+    // display: inline-block;
+    background: #000;
+    color: #fff;
+    // min-width: 75px;
+    text-align: center;
+    @include fs-titlepiece(2);
+    font-size: 24px;
+    line-height: 24px;
+    padding: 10px;
+    // }
 }
 
 .months-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: 100px;
-  margin-right: 100px;
-  width: 800px;
-  // justify-content: space-around;
+    margin-top: 100px;
 }
 
-.gv-w, .gv-m {
-  margin-bottom: 500px;
-  h2 {
-    max-width: 600px;
-    margin-bottom: 50px;
-    // display: none;
-  }
+.gv-w,
+.gv-m {
+    margin-bottom: 500px;
+    h2 {
+        max-width: 600px;
+        margin-bottom: 50px;
+        // display: none;
+    }
+}
+
+.squares-visible {
+    @for $i from 1 through 144 {
+        .dayData:nth-child(#{$i}n) {
+            fill-opacity: 0.9;
+            stroke-opacity: 0.7;
+            stroke-width: 0.6;
+            transition-delay: #{$i * 0.045}s;
+        }
+    }
 }
 
 .day {
-  stroke: #ccc;
-
-  &.weekend {
-    fill: #ccc;
-    fill-opacity: 0.4;
-  }
-  &.hasValues {
-    stroke: yellow;
-    stroke-width: 2px;
-    stroke-alignment: inner;
-  }
-  &.dataPaidLess {
-    fill: red;
-  }
+    stroke: #ccc;
+    &.hasValues {
+        stroke: yellow;
+        stroke-width: 2px;
+        stroke-alignment: inner;
+    }
+    &.dataPaidLess {
+        fill: red;
+    }
 }
 
+.day-group {
+    &.weekend {
+        rect {
+            fill: #ccc !important;
+            fill-opacity: 0.2;
+        }
+    }
+}
+
+// @keyframes loopedMove {
+//     0% {
+//         transform: translateY(5px);
+//     }
+//     100% {
+//         transform: translateY(-5px);
+//     }
+// }
 .dayData {
-  // fill-opacity: 0;
-  // fill: white;
-  // stroke: #000;
-  // stroke-width: 2px;
-
-  .gv-w &{
-    stroke: #ff7e00;
-  }
-
-  .gv-m &{
-    stroke: #2aadbc;
-  }
+    fill-opacity: 1;
+    // stroke-opacity: 0;
+    stroke: #fff;
+    stroke-width: 1.5px;
+    transition-property: all;
+    transition-timing-function: linear;
+    .gv-w & {
+        stroke: #ff7e00;
+    }
+    .gv-m & {
+        stroke: #2aadbc;
+    }
+    // animation: loopedMove 5s infinite;
 }
 
 .month {
-  fill: none;
-  stroke: #000;
-  stroke-width: 2px;
+    fill: none;
+    stroke: #000;
+    stroke-width: 2px;
 }
 
+.month-svg {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+}
 
 .gv-totals {
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  height: 50px;
-  background: rgba(255,255,255,.9);
-  left: 0;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    height: 50px;
+    background: rgba(255, 255, 255, .9);
+    left: 0;
 }
 
 .arrow-text {
-  fill: #000;
-  // stroke: white;
-  font-size: 16px;
-  // stroke-width: 0.03em
+    fill: #000;
+    // stroke: white;
+    font-size: 16px;
+    // stroke-width: 0.03em
+}
+
+.date-label {
+    @include fs-headline(2);
+    fill: #bdbdbd;
+    font-weight: 400;
 }

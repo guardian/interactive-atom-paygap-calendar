@@ -16,7 +16,7 @@
  *
  * @group typography
  */
-@function get-scale($name, $font-scale: $font-scale) {
+ @function get-scale($name, $font-scale: $font-scale) {
     @return map-get($font-scale, $name);
 }
 

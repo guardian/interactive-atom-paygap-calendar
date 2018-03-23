@@ -1,0 +1,125 @@
+@import "mq";
+.content--interactive .content__headline, .headline {
+    font-size: 32px;
+    line-height: 35.2px;
+    font-family: "Guardian Egyptian Web","Guardian Text Egyptian Web",Georgia,serif;
+    font-weight: 700;
+    @include mq(leftCol) {
+      font-size: 50px;
+      line-height: 54px;
+    }
+  }
+  
+  .headline {
+    font-family: "Guardian Headline", "Guardian Egyptian Web", Georgia, serif;
+  }
+  
+  .content__standfirst, .standfirst {
+  
+    font-weight: 200;
+    line-height: 25px;
+    font-size: 22px;
+    max-width: 280px;
+    @include mq(leftCol) {
+      max-width: 460px;
+    }
+  }
+  
+  .content__main, .content__head {
+    position: relative;
+  
+    &:before {
+      position: absolute;
+      top: 0;
+  
+      height: 100%;
+      min-height: 500px;
+      content: ' ';
+  
+  
+      border-left:1px solid #dfdfdf;
+  
+      @include mq(leftCol) {
+        left: calc((100% - 1140px)/2 + 170px);
+      }
+  
+      @include mq(wide) {
+        left: calc((100% - 1300px)/2 + 250px);
+      }
+    }
+  }
+  
+  a, .u-fauxlink {
+      color: #c70000;
+      cursor: pointer;
+      text-decoration: none;
+  }
+  .tonal--tone-news .tone-colour{
+        color: #c70000;
+  }
+  
+  .content__meta-container{
+    background-image: repeating-linear-gradient(to bottom, #dcdcdc, #dcdcdc 0.0625rem, transparent 0.0625rem, transparent 0.25rem);
+    background-repeat: repeat-x;
+    background-position: top;
+    -webkit-background-size: 0.0625rem 0.8125rem;
+    background-size: 0.0625rem 0.8125rem;
+    padding-top: 12px;
+    border-top: none;
+  }
+  .content__main-column--interactive {
+      & > p, & > h2,& > ul,  .element-interactive,.element-atom {
+          max-width: 620px;
+  
+          @include mq(leftCol) {
+              margin-left: 160px !important;
+          }
+          @include mq(wide) {
+              margin-left: 240px !important;
+          }
+      }
+  
+      h2 {
+          font-family: "Guardian Headline", "Guardian Egyptian Web", Georgia;
+          font-size: 36px;
+          line-height: 42px;
+          font-weight: 700;
+          color: #333;
+          margin-top: 36px;
+          margin-bottom: 6px;
+  
+        @include mq($until: desktop) {
+          font-size: 24px;
+          line-height: 28px;
+        }
+      }
+
+      h3 {
+        font-family: "Guardian Headline", "Guardian Egyptian Web", Georgia;
+        font-size: 30px;
+        line-height: 32px;
+        font-weight: 700;
+        color: #333;
+        margin-top: 36px;
+        margin-bottom: 6px;
+
+      @include mq($until: desktop) {
+        font-size: 24px;
+        line-height: 28px;
+      }
+    }
+  
+      .element--immersive {
+          max-width: initial;
+          margin-left: 0 !important;
+          margin-bottom: 36px !important;
+      }
+  
+      .element--showcase {
+  
+        max-width: 860px;
+  
+      }
+  
+  
+  }
