@@ -88,6 +88,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
     function checkScroll() {
         if (lastScroll !== window.pageYOffset) {
             onScroll(domElements, cellSize);
+            size = d3.selectAll(".has-data").size();
             lastScroll = window.pageYOffset;
         }
         window.requestAnimationFrame(() => {
@@ -95,7 +96,6 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
         });
     }
 
-    // initScroll(domElements, cellSize);
     checkScroll();
 
     /* Swoopy arrow stuff */
@@ -372,12 +372,7 @@ const calcCirclePos = (d, i, a, xOrY) => {
 
 const onScroll = (domElements, cellSize) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
-    let shouldBreak = false;
-    
     domElements.forEach(element => {
-        if (shouldBreak) {
-            return;
-        }
         const monthAsInt = monthsArray.indexOf(element.classList[1]);
 
         d3.select(counterSticky)
@@ -400,40 +395,8 @@ const onScroll = (domElements, cellSize) => {
         element.weekEls.forEach(group => {
             const groupRect = group.getBoundingClientRect();
 
-            if (d3.select(group).attr("data-transitioned") !== "yes" && groupRect.top < 500) {
-                d3.select(group).attr("data-transitioned", "yes");
-                size += d3.select(group).selectAll(".dayData").size();
+            transitionCircles(group, groupRect)
 
-                d3.select(group).selectAll(".day-group").selectAll(".dayData")
-                    .transition()
-                    .delay((d, i, a) => {
-                        // console.log(d3.easeCubicIn((i / a.length)));
-                        return d3.easeCubicIn((i / a.length)) * 1000;
-                    })
-                    .ease(d3.easeExpOut)
-                    .duration(500)
-                    .style("transform", d => {
-                        return "none";
-                    })
-                    .style("opacity", "1")
-                    .attr('r', 2.5)
-            }
-
-            if (d3.select(group).attr("data-transitioned") === "yes" && groupRect.top > 500) {
-                d3.select(group).attr("data-transitioned", "no");
-                size -= d3.select(group).selectAll(".dayData").size();
-
-                d3.select(group).selectAll(".dayData")
-                    .transition()
-                    .delay(i => {
-                        return Math.random() * 500;
-                    })
-                    .ease(d3.easeExpOut)
-                    .duration(250)
-                    .style("opacity", "0")
-
-                shouldBreak = true;
-            }
             /* Swoopy arrows stuff */
             const elemRect = element.getBoundingClientRect();
             const arrows = d3.select(element).select('.swoopy-arrow-group');
@@ -509,10 +472,23 @@ const onScroll = (domElements, cellSize) => {
         //   .attr('fill', d => console.log(this))
         //   .attr('fill-opacity', 1)
     });
-
 }
 
-
+const transitionCircles = (group, groupRect) => {
+    d3.select(group).selectAll(".day-group").selectAll(".dayData")
+        .classed('has-data', d => groupRect.top < 500 && d['womenPaidLess'] > 0)
+        .transition()
+        .delay((d, i, a) => {
+            return groupRect.top < 500 ? d3.easeCubicIn((i / a.length)) * 1000 : Math.random() * 500;
+        })
+        .ease(d3.easeExpOut)
+        .duration(groupRect.top < 500 ? 500 : 250)
+        .style("transform", d => {
+            return "none";
+        })
+        .style("opacity", groupRect.top < 500 ? "1" : 0)
+        .attr('r', 2.5)
+}
 
 const getTotalWeekDays = () => {
     var count = 365;
