@@ -23,7 +23,7 @@ let lastScroll = null;
 makeMonthSvgs(domElements, cellSize);
 
 // parse csv and do stuff
-d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
+d3.csv(process.env.PATH + "/assets/latest.csv", function(error, csv) {
     if (error) throw error;
 
     var totalCompaniesReporting = 0;
@@ -43,8 +43,8 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
 
     //group company totals into days on a calendar
     csv.forEach(d => {
-        let lower = Number(d.lower);
-        let val = Number(d.value);
+        let lower = Number(d.DiffMedianHourlyPercent);
+        let val = 1;
         totalCompaniesReporting += val;
         let day = totalWeekDays - Math.floor(Math.abs(lower) / 100 * totalWeekDays);
 
@@ -57,7 +57,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
             //men paid less
             dates[day].menPaidLess += val;
         }
-    })
+    });
 
     //add back the weekend days
     dates = addsWeekends(dates);
@@ -98,53 +98,50 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
 
     /* Swoopy arrow stuff */
 
-    const annotations = [
-    {
-      "dateX": 40,
-      "dateY": -224,
-      "path": "M-21,274C-21,315,-10,350,50,357",
-      "text": "These are the companies that stop paying women one day earlier than men",
-      "textOffset": [
-        -34,
-        261
-      ]
-    }
-  ]
+    const annotations = [{
+        "dateX": 40,
+        "dateY": -224,
+        "path": "M-21,274C-21,315,-10,350,50,357",
+        "text": "These are the companies that stop paying women one day earlier than men",
+        "textOffset": [-34,
+            261
+        ]
+    }]
 
     const decemberSvg = d3.select(december)
-      .select("svg")
+        .select("svg")
 
     const swoopy = swoopyDrag()
-      // .draggable(true)
-      .x(d => d.dateX)
-      .y(d => d.dateY)
-      .on('drag', () => window.annotations = annotations)
-      .annotations(annotations)
+        // .draggable(true)
+        .x(d => d.dateX)
+        .y(d => d.dateY)
+        .on('drag', () => window.annotations = annotations)
+        .annotations(annotations)
 
     const swoopySel = decemberSvg.select('.swoopy-arrow-group').call(swoopy);
 
     // arrow path
     swoopySel.selectAll('path')
-    // .attr('class', d => `swoopy-path-${d.dateY}`)
-    .attr('fill', 'none')
-    .attr('stroke', '#000')
-    .attr('stroke-opacity', 0)
-    .attr('marker-end', 'url(#arrow)')
+        // .attr('class', d => `swoopy-path-${d.dateY}`)
+        .attr('fill', 'none')
+        .attr('stroke', '#000')
+        .attr('stroke-opacity', 0)
+        .attr('marker-end', 'url(#arrow)')
 
     // arrow tip
     decemberSvg
-      .append('marker')
-      .attr('id', 'arrow')
-      .attr('fill-opacity', 0)
-      .attr('viewBox', '-10 -10 20 20')
-      .attr('markerWidth', 10)
-      .attr('markerHeight', 20)
-      .attr('orient', 'auto')
-      .append('path')
-      .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
+        .append('marker')
+        .attr('id', 'arrow')
+        .attr('fill-opacity', 0)
+        .attr('viewBox', '-10 -10 20 20')
+        .attr('markerWidth', 10)
+        .attr('markerHeight', 20)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
 
     swoopySel.selectAll('text')
-      .attr('fill-opacity', 0)
+        .attr('fill-opacity', 0)
 });
 
 
@@ -371,7 +368,7 @@ const calcCirclePos = (d, i, a, xOrY) => {
 const onScroll = (domElements, cellSize) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
     let shouldBreak = false;
-    
+
     domElements.forEach(element => {
         if (shouldBreak) {
             return;
