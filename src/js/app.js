@@ -8,24 +8,25 @@ const calcYDatePosition = (date, cellSize) => d3.timeWeek.count(d3.timeMonth(dat
 const isSameDay = (dateToCheck, actualDate) => { return dateToCheck.getDate() === actualDate.getDate() && dateToCheck.getMonth() === actualDate.getMonth() && dateToCheck.getFullYear() === actualDate.getFullYear() };
 
 // config variables
-const cellSize = 80;
-const cellSizeMargin = 70;
+const cellSize = Math.floor(document.querySelector(".interactive-atom").clientWidth / 7);
+const cellSizeMargin = cellSize - 10;
 const container = document.querySelector('.months-container');
 const december = document.querySelector('.december');
 const november = document.querySelector('.november');
 
-const counterSticky = document.querySelector('.counter-sticky');
+const counterSticky = document.querySelector('.counter-number');
+const counterMonth = document.querySelector('.counter-month')
 const domElements = document.querySelectorAll('.cal-month'); // months need to be named correctly in the css classes, all lowercase
 const genders = ['women', 'men'];
 let size = 0;
 let lastScroll = null;
 
+var formatMonth = d3.timeFormat("%e %B");
 
 makeMonthSvgs(domElements, cellSize);
 
-
 // parse csv and do stuff
-d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
+d3.csv(process.env.PATH + "/assets/latest.csv", function(error, csv) {
     if (error) throw error;
 
     var totalCompaniesReporting = 0;
@@ -45,8 +46,8 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
 
     //group company totals into days on a calendar
     csv.forEach(d => {
-        let lower = Number(d.lower);
-        let val = Number(d.value);
+        let lower = Number(d.DiffMedianHourlyPercent);
+        let val = 1;
         totalCompaniesReporting += val;
         let day = totalWeekDays - Math.floor(Math.abs(lower) / 100 * totalWeekDays);
 
@@ -59,7 +60,7 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
             //men paid less
             dates[day].menPaidLess += val;
         }
-    })
+    });
 
     //add back the weekend days
     dates = addsWeekends(dates);
@@ -100,53 +101,50 @@ d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
 
     /* Swoopy arrow stuff */
 
-    const annotations = [
-    {
-      "dateX": 40,
-      "dateY": -224,
-      "path": "M-21,274C-21,315,-10,350,50,357",
-      "text": "These are the companies that stop paying women one day earlier than men",
-      "textOffset": [
-        -34,
-        261
-      ]
-    }
-  ]
+    const annotations = [{
+        "dateX": 40,
+        "dateY": -224,
+        "path": "M-21,274C-21,315,-10,350,50,357",
+        "text": "These are the companies that stop paying women one day earlier than men",
+        "textOffset": [-34,
+            261
+        ]
+    }]
 
     const decemberSvg = d3.select(december)
-      .select("svg")
+        .select("svg")
 
     const swoopy = swoopyDrag()
-      // .draggable(true)
-      .x(d => d.dateX)
-      .y(d => d.dateY)
-      .on('drag', () => window.annotations = annotations)
-      .annotations(annotations)
+        // .draggable(true)
+        .x(d => d.dateX)
+        .y(d => d.dateY)
+        .on('drag', () => window.annotations = annotations)
+        .annotations(annotations)
 
     const swoopySel = decemberSvg.select('.swoopy-arrow-group').call(swoopy);
 
     // arrow path
     swoopySel.selectAll('path')
-    // .attr('class', d => `swoopy-path-${d.dateY}`)
-    .attr('fill', 'none')
-    .attr('stroke', '#000')
-    .attr('stroke-opacity', 0)
-    .attr('marker-end', 'url(#arrow)')
+        // .attr('class', d => `swoopy-path-${d.dateY}`)
+        .attr('fill', 'none')
+        .attr('stroke', '#000')
+        .attr('stroke-opacity', 0)
+        .attr('marker-end', 'url(#arrow)')
 
     // arrow tip
     decemberSvg
-      .append('marker')
-      .attr('id', 'arrow')
-      .attr('fill-opacity', 0)
-      .attr('viewBox', '-10 -10 20 20')
-      .attr('markerWidth', 10)
-      .attr('markerHeight', 20)
-      .attr('orient', 'auto')
-      .append('path')
-      .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
+        .append('marker')
+        .attr('id', 'arrow')
+        .attr('fill-opacity', 0)
+        .attr('viewBox', '-10 -10 20 20')
+        .attr('markerWidth', 10)
+        .attr('markerHeight', 20)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
 
     swoopySel.selectAll('text')
-      .attr('fill-opacity', 0)
+        .attr('fill-opacity', 0)
 });
 
 
@@ -176,11 +174,11 @@ const addData = (dates, domElements) => {
                 .attr('fill', '#ff7e00')
                 .attr('opacity', 0)
                 .attr('r', 3)
-                .style("transform", d => {
-                    const x = (Math.random() - 0.5) * 10;
-                    const y = (Math.random() - 0.5) * 10;
-                    return `translate(${x}px,${y}px)`;
-                })
+                // .style("transform", d => {
+                //     const x = (Math.random() - 0.5) * 10;
+                //     const y = (Math.random() - 0.5) * 10;
+                //     return `translate(${x}px,${y}px)`;
+                // })
                 .each(function(d, i, a) {
                     const node = d3.select(this);
 
@@ -347,6 +345,10 @@ var sampler = poissonDiscSampler(cellSize, cellSize, 5)
 //     return Math.sqrt(dx * dx + dy * dy);
 // }
 
+const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 const calcCirclePos = (d, i, a, xOrY) => {
     const count = d.womenPaidLess;
 
@@ -373,7 +375,8 @@ const calcCirclePos = (d, i, a, xOrY) => {
 const onScroll = (domElements, cellSize) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
     let shouldBreak = false;
-    
+    let latestWeek = "";
+
     domElements.forEach(element => {
         if (shouldBreak) {
             return;
@@ -385,10 +388,10 @@ const onScroll = (domElements, cellSize) => {
             .duration(500)
             .delay(0)
             .tween('text', function() {
-                const currentVal = this.textContent;
+                const currentVal = parseInt(this.textContent.replace(/,/g, ""));
                 const i = d3.interpolate(currentVal, size)
                 return (t) => {
-                    d3.select(counterSticky).text(parseInt(i(t)));
+                    d3.select(counterSticky).text(numberWithCommas(parseInt(i(t))));
                 }
             });
 
@@ -400,11 +403,17 @@ const onScroll = (domElements, cellSize) => {
         element.weekEls.forEach(group => {
             const groupRect = group.getBoundingClientRect();
 
+            if (groupRect.top < 500) {
+                d3.select(group).attr("data-foo", d => {
+                    latestWeek = d.values[(d.values.length - 1)];
+                });
+            }
+
             if (d3.select(group).attr("data-transitioned") !== "yes" && groupRect.top < 500) {
                 d3.select(group).attr("data-transitioned", "yes");
                 size += d3.select(group).selectAll(".dayData").size();
 
-                d3.select(group).selectAll(".day-group").selectAll(".dayData")
+                d3.select(group).selectAll(".dayData")
                     .transition()
                     .delay((d, i, a) => {
                         // console.log(d3.easeCubicIn((i / a.length)));
@@ -412,11 +421,11 @@ const onScroll = (domElements, cellSize) => {
                     })
                     .ease(d3.easeExpOut)
                     .duration(500)
-                    .style("transform", d => {
-                        return "none";
-                    })
+                    // .style("transform", d => {
+                    //     return "none";
+                    // })
                     .style("opacity", "1")
-                    .attr('r', 2.5)
+                    // .attr('r', 2.5)
             }
 
             if (d3.select(group).attr("data-transitioned") === "yes" && groupRect.top > 500) {
@@ -509,6 +518,8 @@ const onScroll = (domElements, cellSize) => {
         //   .attr('fill', d => console.log(this))
         //   .attr('fill-opacity', 1)
     });
+
+    counterMonth.innerHTML = formatMonth(latestWeek);
 
 }
 

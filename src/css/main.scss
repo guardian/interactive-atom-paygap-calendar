@@ -25,27 +25,40 @@
         line-height: 96px;
         padding: 10px;
     }
+    .element-interactive {
+        margin: 0 !important;
+    }
 }
 
 .counter-container {
     position: absolute;
     height: 80px;
-    left: 568px;
+    left: 660px;
 }
 
 .counter-sticky {
     position: fixed;
     // .number {
     // display: inline-block;
-    background: #000;
-    color: #fff;
+    // background: #000;
+    color: #000;
     // min-width: 75px;
-    text-align: center;
+    text-align: left;
     @include fs-titlepiece(2);
-    font-size: 24px;
+    font-size: 22px;
     line-height: 24px;
-    padding: 10px;
+    // padding: 10px;
+    padding-top: 2px;
+    top: 20px;
+    width: 360px;
+    border-top: 2px solid #000;
     // }
+    .counter-number {
+        display: block;
+        color: #ff7e00;
+        font-size: 54px;
+        line-height: 54px;
+    }
 }
 
 .months-container {
@@ -74,7 +87,8 @@
 }
 
 .day {
-    stroke: #ccc;
+    stroke: #000;
+    stroke-width: 1px;
     &.hasValues {
         stroke: yellow;
         stroke-width: 2px;
@@ -88,8 +102,8 @@
 .day-group {
     &.weekend {
         rect {
-            fill: #ccc !important;
-            fill-opacity: 0.2;
+            fill: url(#psfll) !important;
+            // fill-opacity: 0.2;
         }
     }
 }
@@ -127,6 +141,7 @@
 .month-svg {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
+    overflow: visible;
 }
 
 .gv-totals {
@@ -146,7 +161,7 @@
 }
 
 .date-label {
-    @include fs-headline(2);
-    fill: #bdbdbd;
+    @include fs-GuardianHeadlineFull(1);
+    fill: #000;
     font-weight: 400;
 }
