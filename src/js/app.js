@@ -8,8 +8,8 @@ const calcYDatePosition = (date, cellSize) => d3.timeWeek.count(d3.timeMonth(dat
 const isSameDay = (dateToCheck, actualDate) => { return dateToCheck.getDate() === actualDate.getDate() && dateToCheck.getMonth() === actualDate.getMonth() && dateToCheck.getFullYear() === actualDate.getFullYear() };
 
 // config variables
-const cellSize = 80;
-const cellSizeMargin = 70;
+const cellSize = document.querySelector(".interactive-atom").clientWidth / 7;
+const cellSizeMargin = cellSize - 10;
 const container = document.querySelector('.months-container');
 const counterSticky = document.querySelector('.counter-sticky');
 const domElements = document.querySelectorAll('.cal-month'); // months need to be named correctly in the css classes, all lowercase
@@ -17,9 +17,7 @@ const genders = ['women', 'men'];
 let size = 0;
 let lastScroll = null;
 
-
 makeMonthSvgs(domElements, cellSize);
-
 
 // parse csv and do stuff
 d3.csv(process.env.PATH + "/assets/data.csv", function(error, csv) {
