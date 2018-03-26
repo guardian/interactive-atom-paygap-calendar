@@ -8,17 +8,20 @@ const calcYDatePosition = (date, cellSize) => d3.timeWeek.count(d3.timeMonth(dat
 const isSameDay = (dateToCheck, actualDate) => { return dateToCheck.getDate() === actualDate.getDate() && dateToCheck.getMonth() === actualDate.getMonth() && dateToCheck.getFullYear() === actualDate.getFullYear() };
 
 // config variables
-const cellSize = document.querySelector(".interactive-atom").clientWidth / 7;
+const cellSize = Math.floor(document.querySelector(".interactive-atom").clientWidth / 7);
 const cellSizeMargin = cellSize - 10;
 const container = document.querySelector('.months-container');
 const december = document.querySelector('.december');
 const november = document.querySelector('.november');
 
-const counterSticky = document.querySelector('.counter-sticky');
+const counterSticky = document.querySelector('.counter-number');
+const counterMonth = document.querySelector('.counter-month')
 const domElements = document.querySelectorAll('.cal-month'); // months need to be named correctly in the css classes, all lowercase
 const genders = ['women', 'men'];
 let size = 0;
 let lastScroll = null;
+
+var formatMonth = d3.timeFormat("%e %B");
 
 makeMonthSvgs(domElements, cellSize);
 
@@ -171,11 +174,11 @@ const addData = (dates, domElements) => {
                 .attr('fill', '#ff7e00')
                 .attr('opacity', 0)
                 .attr('r', 3)
-                .style("transform", d => {
-                    const x = (Math.random() - 0.5) * 10;
-                    const y = (Math.random() - 0.5) * 10;
-                    return `translate(${x}px,${y}px)`;
-                })
+                // .style("transform", d => {
+                //     const x = (Math.random() - 0.5) * 10;
+                //     const y = (Math.random() - 0.5) * 10;
+                //     return `translate(${x}px,${y}px)`;
+                // })
                 .each(function(d, i, a) {
                     const node = d3.select(this);
 
@@ -342,6 +345,10 @@ var sampler = poissonDiscSampler(cellSize, cellSize, 5)
 //     return Math.sqrt(dx * dx + dy * dy);
 // }
 
+const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 const calcCirclePos = (d, i, a, xOrY) => {
     const count = d.womenPaidLess;
 
@@ -368,6 +375,7 @@ const calcCirclePos = (d, i, a, xOrY) => {
 const onScroll = (domElements, cellSize) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
     let shouldBreak = false;
+    let latestWeek = "";
 
     domElements.forEach(element => {
         if (shouldBreak) {
@@ -380,10 +388,10 @@ const onScroll = (domElements, cellSize) => {
             .duration(500)
             .delay(0)
             .tween('text', function() {
-                const currentVal = this.textContent;
+                const currentVal = parseInt(this.textContent.replace(/,/g, ""));
                 const i = d3.interpolate(currentVal, size)
                 return (t) => {
-                    d3.select(counterSticky).text(parseInt(i(t)));
+                    d3.select(counterSticky).text(numberWithCommas(parseInt(i(t))));
                 }
             });
 
@@ -395,11 +403,17 @@ const onScroll = (domElements, cellSize) => {
         element.weekEls.forEach(group => {
             const groupRect = group.getBoundingClientRect();
 
+            if (groupRect.top < 500) {
+                d3.select(group).attr("data-foo", d => {
+                    latestWeek = d.values[(d.values.length - 1)];
+                });
+            }
+
             if (d3.select(group).attr("data-transitioned") !== "yes" && groupRect.top < 500) {
                 d3.select(group).attr("data-transitioned", "yes");
                 size += d3.select(group).selectAll(".dayData").size();
 
-                d3.select(group).selectAll(".day-group").selectAll(".dayData")
+                d3.select(group).selectAll(".dayData")
                     .transition()
                     .delay((d, i, a) => {
                         // console.log(d3.easeCubicIn((i / a.length)));
@@ -407,11 +421,11 @@ const onScroll = (domElements, cellSize) => {
                     })
                     .ease(d3.easeExpOut)
                     .duration(500)
-                    .style("transform", d => {
-                        return "none";
-                    })
+                    // .style("transform", d => {
+                    //     return "none";
+                    // })
                     .style("opacity", "1")
-                    .attr('r', 2.5)
+                    // .attr('r', 2.5)
             }
 
             if (d3.select(group).attr("data-transitioned") === "yes" && groupRect.top > 500) {
@@ -504,6 +518,8 @@ const onScroll = (domElements, cellSize) => {
         //   .attr('fill', d => console.log(this))
         //   .attr('fill-opacity', 1)
     });
+
+    counterMonth.innerHTML = formatMonth(latestWeek);
 
 }
 
