@@ -33,24 +33,28 @@ const makeMonthSvgs = (domElements, cellSize) => {
         }
 
         const svg = d3.select(domElement).selectAll("svg")
-          .data(d3.range(2018, 2019))
-          .enter().append("svg")
+            .data(d3.range(2018, 2019))
+            .enter().append("svg")
             .attr("width", width)
             .attr("height", height)
             .attr("class", "month-svg")
             .style("overflow", "visible")
 
+        svg.append("defs")
+            .html(`<pattern id="psfll" patternUnits="userSpaceOnUse" width="4" height="4"><rect width="4" height="4" fill="#ffffff"></rect><path d="M 0,4 l 4,-4 M -1,1 l 2,-2
+            M 3,5 l 2,-2" stroke-width="1" shape-rendering="auto" stroke="#dcdcdc" stroke-linecap="square"></path></pattern>`);
+
 
 
         //day rects
         svg.selectAll(".day")
-          .data(e => { return d3.nest().key(d => d3.timeWeek.count(d3.timeMonth(d), d)).entries(d3.timeDays(new Date(2018, monthAsInt, 1), new Date(2018, monthAsInt + 1, 1))) })
-          .enter()
+            .data(e => { return d3.nest().key(d => d3.timeWeek.count(d3.timeMonth(d), d)).entries(d3.timeDays(new Date(2018, monthAsInt, 1), new Date(2018, monthAsInt + 1, 1))) })
+            .enter()
             .append('g')
             .classed('week-group', true)
             .selectAll('g')
-          .data(d => d.values)
-          .enter()
+            .data(d => d.values)
+            .enter()
             .append('g')
             .attr("class", "day-group")
             .attr('transform', d => `translate(${d.getDay() * cellSize}, ${d3.timeWeek.count(d3.timeMonth(d), d) * cellSize})`)
@@ -73,9 +77,9 @@ const makeMonthSvgs = (domElements, cellSize) => {
                     .classed('date-label', true)
                     .style("opacity", "1")
             });
-          
-      svg.append('g').classed('swoopy-arrow-group', true)
-        //Adds month path. Enable this once the monthpath function works correctly
+
+        svg.append('g').classed('swoopy-arrow-group', true)
+            //Adds month path. Enable this once the monthpath function works correctly
 
         // svg.selectAll(".month")
         // .data(d => d3.timeMonths(new Date(d, 0, 1), new Date(d + 1, 0, 1)))
