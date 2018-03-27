@@ -187,7 +187,7 @@ const addData = (dates, domElements) => {
 
                         const grid = Math.ceil(Math.sqrt(count));
 
-                        sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin / (grid * 1.28)));
+                        sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin / (grid * 1.2)));
                     }
 
                     var s = sampler();

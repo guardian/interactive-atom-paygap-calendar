@@ -87,7 +87,7 @@
 }
 
 .day {
-    stroke: #000;
+    stroke: #bdbdbd;
     stroke-width: 1px;
     &.hasValues {
         stroke: yellow;
@@ -162,6 +162,6 @@
 
 .date-label {
     @include fs-GuardianHeadlineFull(1);
-    fill: #000;
-    font-weight: 400;
+    fill: #767676;
+    font-weight: 500;
 }
