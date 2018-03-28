@@ -42,6 +42,7 @@
     // display: inline-block;
     // background: #000;
     color: #000;
+    max-width: 300px;
     // min-width: 75px;
     text-align: left;
     @include fs-titlepiece(2);
@@ -119,7 +120,6 @@
 .dayData {
     fill-opacity: 1;
     // stroke-opacity: 0;
-    stroke: #fff;
     stroke-width: 1.5px;
     transition-property: all;
     transition-timing-function: linear;
