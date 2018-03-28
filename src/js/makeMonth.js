@@ -44,8 +44,6 @@ const makeMonthSvgs = (domElements, cellSize) => {
             .html(`<pattern id="psfll" patternUnits="userSpaceOnUse" width="4" height="4"><rect width="4" height="4" fill="#ffffff"></rect><path d="M 0,4 l 4,-4 M -1,1 l 2,-2
             M 3,5 l 2,-2" stroke-width="1" shape-rendering="auto" stroke="#dcdcdc" stroke-linecap="square"></path></pattern>`);
 
-
-
         //day rects
         svg.selectAll(".day")
             .data(e => { return d3.nest().key(d => d3.timeWeek.count(d3.timeMonth(d), d)).entries(d3.timeDays(new Date(2018, monthAsInt, 1), new Date(2018, monthAsInt + 1, 1))) })
@@ -59,7 +57,7 @@ const makeMonthSvgs = (domElements, cellSize) => {
             .attr("class", "day-group")
             .attr('transform', d => `translate(${d.getDay() * cellSize}, ${d3.timeWeek.count(d3.timeMonth(d), d) * cellSize})`)
             .append("rect")
-            .attr('id', format)
+            .attr('id', d => "d" + format(d))
             .attr("class", "day")
             .style('fill', '#fff')
             .attr("width", cellSize)

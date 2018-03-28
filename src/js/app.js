@@ -1,5 +1,5 @@
 import makeMonthSvgs from './makeMonth';
-import * as d3 from "d3";
+import * as d3 from "d3"
 import { swoopyDrag } from 'd3-swoopy-drag';
 
 // helper funcs
@@ -25,9 +25,21 @@ var formatMonth = d3.timeFormat("%e %B");
 
 makeMonthSvgs(domElements, cellSize);
 
+
 // parse csv and do stuff
 d3.csv(process.env.PATH + "/assets/latest.csv", function(error, csv) {
     if (error) throw error;
+
+    // const csvWithHighlights = csv.map(d => {
+    //     const index = highlightedCirclesSheet.indexOf(e => d.paygap === e.DiffMedianHourlyPercent);
+
+    //     if (index > -1) {
+    //         d.highlighted = true;
+    //         d.companyName = highlightedCirclesSheet[index].EmployerName;
+    //         highlightedCirclesSheet.splice(index, 1);
+    //     }
+    //     return d;
+    // });
 
     var totalCompaniesReporting = 0;
     //get number of weekdays in the year
@@ -101,50 +113,93 @@ d3.csv(process.env.PATH + "/assets/latest.csv", function(error, csv) {
 
     /* Swoopy arrow stuff */
 
+    function resizePos(annotationPos) {
+        return annotationPos * (document.querySelector(".interactive-atom").clientWidth / 620)
+    }
+
+    function cleanAnnotations(annotations) {
+        return annotations.map(a => {
+            a.dateX = resizePos(a.dateX);
+            a.dateY = resizePos(a.dateY);
+            a.textOffset[0] = resizePos(a.textOffset[0]);
+            a.textOffset[1] = resizePos(a.textOffset[1]);
+            a.path = a.path.replace(/[0-9]+/g, m => resizePos(Number(m)));
+
+            return a;
+        });
+    }
+
     const annotations = [{
+        "month": "january",
         "dateX": 40,
         "dateY": -224,
-        "path": "M-21,274C-21,315,-10,350,50,357",
-        "text": "These are the companies that stop paying women one day earlier than men",
-        "textOffset": [-34,
-            261
-        ]
+        "path": "M325,592C286,574,267,537,266,490",
+        "text": "17 January is the first day when a company stops paying women. A 95.5% pay gap",
+        "date": "2018-01-17",
+        "textOffset": [
+            331,
+            597
+        ],
+        "length": document.querySelector(".interactive-atom").clientWidth === 620 ? 30 : 18
     }]
 
-    const decemberSvg = d3.select(december)
-        .select("svg")
+    const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 
-    const swoopy = swoopyDrag()
-        // .draggable(true)
-        .x(d => d.dateX)
-        .y(d => d.dateY)
-        .on('drag', () => window.annotations = annotations)
-        .annotations(annotations)
+    months.forEach(month => {
+        const monthSvg = d3.select("." + month)
+            .select("svg")
 
-    const swoopySel = decemberSvg.select('.swoopy-arrow-group').call(swoopy);
+        const swoopy = swoopyDrag()
+            // .draggable(true)
+            .x(d => d.dateX)
+            .y(d => d.dateY)
+            .on('drag', () => window.annotations = annotations)
+            .annotations(cleanAnnotations(annotations.filter(d => d.month === month)))
 
-    // arrow path
-    swoopySel.selectAll('path')
-        // .attr('class', d => `swoopy-path-${d.dateY}`)
-        .attr('fill', 'none')
-        .attr('stroke', '#000')
-        .attr('stroke-opacity', 0)
-        .attr('marker-end', 'url(#arrow)')
+        const swoopySel = monthSvg.select('.swoopy-arrow-group').call(swoopy);
 
-    // arrow tip
-    decemberSvg
-        .append('marker')
-        .attr('id', 'arrow')
-        .attr('fill-opacity', 0)
-        .attr('viewBox', '-10 -10 20 20')
-        .attr('markerWidth', 10)
-        .attr('markerHeight', 20)
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
+        // arrow path
+        swoopySel.selectAll('path')
+            // .attr('class', d => `swoopy-path-${d.dateY}`)
+            .attr('fill', 'none')
+            .attr('stroke', '#000')
+            .attr('stroke-opacity', 0)
+            .attr('marker-end', 'url(#arrow)')
 
-    swoopySel.selectAll('text')
-        .attr('fill-opacity', 0)
+        // arrow tip
+        monthSvg
+            .append('marker')
+            .attr('id', 'arrow')
+            .attr('fill-opacity', 0)
+            .attr('viewBox', '-10 -10 20 20')
+            .attr('markerWidth', 10)
+            .attr('markerHeight', 20)
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
+
+        swoopySel.selectAll('text')
+            .attr('fill-opacity', 0)
+            .each(function(d) {
+                d3.select(this)
+                    .text('');
+                console.log(d.length);
+                tspans(d3.select(this), wordwrap(d.text, d.length), 20)
+            });
+
+        const onTop = monthSvg.append("g").classed("on-top", true);
+
+        annotations.filter(d => d.month === month).forEach(a => {
+            const rect = d3.select("#d" + a.date);
+            const rectTransform = rect.node().parentNode.getAttribute("transform");
+            const removed = rect.style("stroke", "#000").style("stroke-width", "1px").attr("transform", rectTransform).style("fill", "transparent");
+
+            console.log(rect.node());
+            onTop.append(function() {
+                return rect.node();
+            })
+        });
+    });
 });
 
 
@@ -173,7 +228,7 @@ const addData = (dates, domElements) => {
                 .attr('class', 'dayData')
                 .attr('fill', '#ff7e00')
                 .attr('opacity', 0)
-                .attr('r', 3)
+                .attr('r', 3.5)
                 // .style("transform", d => {
                 //     const x = (Math.random() - 0.5) * 10;
                 //     const y = (Math.random() - 0.5) * 10;
@@ -187,7 +242,7 @@ const addData = (dates, domElements) => {
 
                         const grid = Math.ceil(Math.sqrt(count));
 
-                        sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin / (grid * 1.2)));
+                        sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin / (grid * 1.25)));
                     }
 
                     var s = sampler();
@@ -408,7 +463,6 @@ const onScroll = (domElements, cellSize) => {
                 });
             }
 
-
             /* Swoopy arrows stuff */
             const elemRect = element.getBoundingClientRect();
             const arrows = d3.select(element).select('.swoopy-arrow-group');
@@ -420,6 +474,7 @@ const onScroll = (domElements, cellSize) => {
                 .duration(2000)
                 .attr('stroke-opacity', elemRect.top < 396 ? 1 : 0)
                 .attr('marker-end', 'url(#arrow)')
+
 
             arrows.selectAll('text')
                 .transition()
@@ -447,13 +502,6 @@ const onScroll = (domElements, cellSize) => {
             //         .attr('r', 2.5)
 
             // }
-
-            // d3.select(group).selectAll("text")
-            //     .transition()
-            //     .delay((d, i) => i * 100)
-            //     .ease(d3.easeExpOut)
-            //     .duration(2000)
-            //     .style("opacity", d => elemRect.top < 500 ? "1" : "0");
         });
 
         /* Swoopy arrows stuff */
@@ -502,7 +550,15 @@ const transitionCircles = (group, groupRect) => {
             return "none";
         })
         .style("opacity", groupRect.top < 500 ? "1" : 0)
-        .attr('r', 2.5)
+        // .attr('r', 2.5)
+
+    d3.select(group).selectAll("text")
+        .transition()
+        .delay((d, i) => i * 100)
+        .ease(d3.easeExpOut)
+        .duration(2000)
+        .style("fill", d => groupRect.top < 500 ? "#767676" : "#f6f6f6");
+
 }
 
 const getTotalWeekDays = () => {
@@ -534,4 +590,123 @@ const addsWeekends = (dates) => {
         dates[day].date = curday;
     }
     return dates;
+}
+
+const tspans = function(parent, lines, lh) {
+    return parent.selectAll('tspan')
+        .data(function(d) {
+            return (typeof(lines) == 'function' ? lines(d) : lines)
+                .map(function(l) {
+                    return { line: l, parent: d };
+                });
+        })
+        .enter()
+        .append('tspan')
+        .text(function(d) { return d.line; })
+        .attr('x', 0)
+        .attr('dy', function(d, i) { return i ? (typeof(lh) == 'function' ? lh(d.parent, d.line, i) : lh) || 15 : 0; });
+}
+
+var CHAR_W = {
+    A: 7,
+    a: 7,
+    B: 8,
+    b: 7,
+    C: 8,
+    c: 6,
+    D: 9,
+    d: 7,
+    E: 7,
+    e: 7,
+    F: 7,
+    f: 4,
+    G: 9,
+    g: 7,
+    H: 9,
+    h: 7,
+    I: 3,
+    i: 3,
+    J: 5,
+    j: 3,
+    K: 8,
+    k: 6,
+    L: 7,
+    l: 3,
+    M: 11,
+    m: 11,
+    N: 9,
+    n: 7,
+    O: 9,
+    o: 7,
+    P: 8,
+    p: 7,
+    Q: 9,
+    q: 7,
+    R: 8,
+    r: 4,
+    S: 8,
+    s: 6,
+    T: 7,
+    t: 4,
+    U: 9,
+    u: 7,
+    V: 7,
+    v: 6,
+    W: 11,
+    w: 9,
+    X: 7,
+    x: 6,
+    Y: 7,
+    y: 6,
+    Z: 7,
+    z: 5,
+    '.': 2,
+    ',': 2,
+    ':': 2,
+    ';': 2
+};
+
+const wordwrap = function(line, maxCharactersPerLine, minCharactersPerLine, monospace) {
+    var l, lines = [],
+        w = [],
+        words = [],
+        w1, maxChars, minChars, maxLineW, minLineW;
+    w1 = line.split(' ');
+    w1.forEach(function(s, i) {
+        var w2 = s.split('-');
+        if (w2.length > 1) {
+            w2.forEach(function(t, j) {
+                w.push(t + (j < w2.length - 1 ? '-' : ''));
+            });
+        } else {
+            w.push(s + (i < w1.length - 1 ? ' ' : ''));
+        }
+    });
+    maxChars = maxCharactersPerLine || 40;
+    minChars = minCharactersPerLine || Math.max(3, Math.min(maxChars * 0.5, 0.75 * w.map(word_len).sort(num_asc)[Math.round(w.length / 2)]));
+    maxLineW = maxChars * CHAR_W.a;
+    minLineW = minChars * CHAR_W.a;
+    l = 0;
+    w.forEach(function(d) {
+        var ww = d3.sum(d.split('').map(char_w));
+        if (l + ww > maxLineW && l > minLineW) {
+            lines.push(words.join(''));
+            words.length = 0;
+            l = 0;
+        }
+        l += ww;
+        return words.push(d);
+    });
+    if (words.length) {
+        lines.push(words.join(''));
+    }
+    return lines.filter(function(d) {
+        return d !== '';
+    });
+
+    function char_w(c) { return !monospace && CHAR_W[c] || CHAR_W.a; }
+
+    function word_len(d) { return d.length; }
+
+    function num_asc(a, b) { return a - b; }
 }
