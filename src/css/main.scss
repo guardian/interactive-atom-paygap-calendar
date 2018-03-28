@@ -165,3 +165,8 @@
     fill: #f6f6f6;
     font-weight: 500;
 }
+
+.circle-label,
+.circle-label-outline {
+    @include fs-textSans(2);
+}

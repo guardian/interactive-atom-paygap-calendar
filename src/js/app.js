@@ -601,7 +601,7 @@ const transitionCircles = (group, groupRect) => {
         .delay((d, i) => i * 100)
         .ease(d3.easeExpOut)
         .duration(2000)
-        .style("fill", d => groupRect.top < 500 ? "#767676" : "#f6f6f6");
+        .style("fill", d => groupRect.top < 500 ? "#000" : "#f6f6f6");
 
 }
 
