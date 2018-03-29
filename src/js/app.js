@@ -2,6 +2,7 @@ import makeMonthSvgs from './makeMonth';
 import * as d3 from "d3"
 import { swoopyDrag } from 'd3-swoopy-drag';
 import loadJson from '../components/load-json';
+import Awesomeplete from './awesomplete.js'
 
 // helper funcs
 const isSameDay = (dateToCheck, actualDate) => { return dateToCheck.getDate() === actualDate.getDate() && dateToCheck.getMonth() === actualDate.getMonth() && dateToCheck.getFullYear() === actualDate.getFullYear() };
@@ -41,8 +42,6 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             }
             return d;
         });
-
-
 
         var totalCompaniesReporting = 0;
         //get number of weekdays in the year
@@ -86,9 +85,6 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
         //add back the weekend days
         dates = addsWeekends(dates);
 
-
-
-
         //creates total aggregate
         var totalWomenCounter = 0;
         var totalMenCounter = 0;
@@ -107,6 +103,76 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             d.menPctPaidLess = d.menTotalPaidLess / totalCompaniesReporting;
         });
 
+        //search box
+
+        const parent = d3.select(".search-box-parent");
+
+        const searchBox = parent.insert("div", ":first-child").classed("search-container", true);
+        const input = searchBox.append("input");
+
+        input.attr("placeholder", "Find a company …");
+
+        // const buttonsWrapper = searchBox.append("div").classed("buttons", true);
+
+        // const companiesToButton = ["Schoolsworks Academy Trust", "Sussex Learning Trust", 'Asos.com Limited', 'Credit Suisse (UK) Limited'];
+
+        const awesome = new Awesomplete(input.node(), {
+            list: csvWithHighlights.map(d => d.EmployerName)
+        });
+
+        const close = d3.select('.awesomplete').append("div").style("display", "none").classed("search", true);
+
+        close.html(`<svg class="icon-cancel" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 30 30">
+        <path d="m 8.2646211,7.64 -0.985372,0.992 6.8996289,7.5523 7.720992,6.739 0.821373,-0.8267 -6.899628,-7.5524 -7.5569939,-6.9042" fill="#fff"></path>
+        <path d="m 7.2792491,21.64 0.985372,0.9854 7.5569939,-6.8977 6.899628,-7.5523 -0.985381,-0.992 -7.556984,6.9042 -6.8996289,7.5524" fill="#fff"></path>
+        </svg>`);
+
+        close.on("click", function(e) {
+            close.style("display", "none");
+            input.node().value = "";
+            d3.select(".label-g").remove();
+        });
+
+        input.on("keyup", function(e) {
+            if (input.node().value.length > 0) {
+                close.style("display", "inline-block");
+            } else {
+                close.style("display", "none");
+            }
+        });
+
+        let dayArray = new Array(totalWeekDays).fill(null);
+        var counter = 0;
+        for (var day = 1; day < 365 + 1; day++) {
+            var curday = new Date(2018, 0, day);
+
+            if (curday.getDay() !== 6 && curday.getDay() !== 0) {
+                dayArray[counter] = curday;
+                counter++;
+            }
+        }
+
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        function selectedCompany(company) {
+            const textBox = d3.select(".search-box-result");
+            const paygap = Number(csvWithHighlights.filter(d => d.EmployerName === company)[0].DiffMedianHourlyPercent);
+
+            let day = totalWeekDays - Math.floor(Math.abs(paygap) / 100 * totalWeekDays);
+
+            textBox.html(`${company} stops paying women on ${dayArray[day].getDate()} ${monthNames[dayArray[day].getMonth()]}`);
+        }
+
+        document.addEventListener("awesomplete-selectcomplete", function(e) {
+            const company = e.text.label;
+
+            selectedCompany(company);
+        });
+
+
+        console.log(dates);
 
 
         // addData(dates, totalWomenCounter);
