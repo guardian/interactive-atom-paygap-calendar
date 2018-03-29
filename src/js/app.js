@@ -195,7 +195,6 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .each(function(d) {
                     d3.select(this)
                         .text('');
-                    console.log(d.length);
                     tspans(d3.select(this), wordwrap(d.text, d.length), 20)
                 });
 
@@ -246,7 +245,7 @@ const addData = (dates, domElements) => {
                 .attr('fill', '#ff7e00')
                 .attr('opacity', 0)
                 .attr('r', 3)
-                .attr('cx', d => { console.log(d); return d.x + cellSize / 2 })
+                .attr('cx', d => d.x + cellSize / 2)
                 .attr('cy', d => d.y + cellSize / 2)
 
             // circles
@@ -583,7 +582,7 @@ const onScroll = (domElements, cellSize) => {
 const transitionCircles = (group, groupRect) => {
 
     d3.select(group).selectAll(".day-group").selectAll(".dayData")
-        .classed('has-data', d => groupRect.top < 500 && d['womenPaidLess'] > 0)
+        .classed('has-data', d => groupRect.top < 500)
         .transition()
         .delay((d, i, a) => {
             return groupRect.top < 500 ? d3.easeCubicIn((i / a.length)) * 1000 : Math.random() * 500;
