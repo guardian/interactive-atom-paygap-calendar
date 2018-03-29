@@ -123,14 +123,18 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
         const close = d3.select('.awesomplete').append("div").style("display", "none").classed("search", true);
 
         close.html(`<svg class="icon-cancel" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 30 30">
-        <path d="m 8.2646211,7.64 -0.985372,0.992 6.8996289,7.5523 7.720992,6.739 0.821373,-0.8267 -6.899628,-7.5524 -7.5569939,-6.9042" fill="#fff"></path>
-        <path d="m 7.2792491,21.64 0.985372,0.9854 7.5569939,-6.8977 6.899628,-7.5523 -0.985381,-0.992 -7.556984,6.9042 -6.8996289,7.5524" fill="#fff"></path>
+        <path d="m 8.2646211,7.64 -0.985372,0.992 6.8996289,7.5523 7.720992,6.739 0.821373,-0.8267 -6.899628,-7.5524 -7.5569939,-6.9042" fill="#000"></path>
+        <path d="m 7.2792491,21.64 0.985372,0.9854 7.5569939,-6.8977 6.899628,-7.5523 -0.985381,-0.992 -7.556984,6.9042 -6.8996289,7.5524" fill="#000"></path>
         </svg>`);
 
         close.on("click", function(e) {
             close.style("display", "none");
             input.node().value = "";
             d3.select(".label-g").remove();
+
+            d3.select(".search-box-date").html(``);
+
+            d3.select(".search-box-gap").html(``);
         });
 
         input.on("keyup", function(e) {
@@ -162,7 +166,11 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
 
             let day = totalWeekDays - Math.floor(Math.abs(paygap) / 100 * totalWeekDays);
 
-            textBox.html(`${company} stops paying women on ${dayArray[day].getDate()} ${monthNames[dayArray[day].getMonth()]}`);
+            d3.select(".search-box-result").html(`${company}`);
+
+            d3.select(".search-box-date").html(`${dayArray[day].getMonth()} ${monthNames[dayArray[day].getMonth()]}`);
+
+            d3.select(".search-box-gap").html(`${paygap}%`);
         }
 
         document.addEventListener("awesomplete-selectcomplete", function(e) {

@@ -240,23 +240,23 @@
 .awesomplete>input {
     display: block;
     box-sizing: border-box;
-    border: 1px solid #bdbdbd;
-    border-radius: 100px;
+    border: 0;
+    border-bottom: 2px solid #000;
     background: transparent;
     width: 100%;
     outline: 0;
     margin: 0;
-    padding: 10px 15px 10px;
+    padding: 6px 0px 2px;
     height: 44px;
-    font-size: 14px;
-    line-height: 18px;
-    font-family: "Guardian Text Sans Web", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-    font-size: 16px;
+    // font-size: 14px;
+    // line-height: 18px;
+    // font-family: "Guardian Text Sans Web", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    // font-size: 16px;
     width: 100%;
     max-width: 620px;
     margin-top: 12px;
     margin-bottom: 12px;
-    color: #000;
+    color: #ff7e00;
 }
 
 .awesomplete>ul {
@@ -352,7 +352,7 @@
     display: inline-block;
     height: 38px;
     width: 38px;
-    background-color: #c70000;
+    // background-color: #c70000;
     border-radius: 36px;
     border: 0;
     position: absolute;
@@ -367,4 +367,22 @@
         left: 4px;
         margin-top: 12px;
     }
+}
+
+.search-box-parent {
+    div {
+        display: inline-block;
+    }
+    @include fs-headline(3);
+}
+
+.search-box-date,
+.search-box-gap {
+    min-width: 100px;
+    border: 0;
+    border-bottom: 2px dotted #000;
+    padding: 2px 0px 2px;
+    box-sizing: border-box;
+    height: 30px;
+    color: #ff7e00;
 }
