@@ -22,6 +22,9 @@ const domElements = document.querySelectorAll('.cal-month'); // months need to b
 let size = 0;
 let lastScroll = null;
 
+const showThreshold = window.innerHeight / 1.25;
+const annotationsThreshold = window.innerHeight / 2;
+
 var formatMonth = d3.timeFormat("%e %B");
 
 makeMonthSvgs(domElements, cellSize);
@@ -275,14 +278,13 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                     tspans(d3.select(this), wordwrap(d.text, d.length), 20)
                 });
 
-            const onTop = monthSvg.append("g").classed("on-top", true);
+            const onTop = monthSvg.append("g").classed("on-top", true).style('opacity', 0);
 
             annotations.filter(d => d.month === month).forEach(a => {
                 const rect = d3.select("#d" + a.date);
                 const rectTransform = rect.node().parentNode.getAttribute("transform");
                 const removed = rect.style("stroke", "#000").style("stroke-width", "1px").attr("transform", rectTransform).style("fill", "transparent");
 
-                console.log(rect.node());
                 onTop.append(function() {
                     return rect.node();
                 })
@@ -453,72 +455,6 @@ function poissonDiscSampler(width, height, radius) {
 
 var sampler = poissonDiscSampler(cellSize, cellSize, 5)
 
-// var svg = d3.select("body").append("svg")
-//     .attr("width", 1000)
-//     .attr("height", 1000);
-
-// d3.timer(function() {
-//     for (var i = 0; i < 10; ++i) {
-//         var s = sampler();
-//         if (!s) return true;
-//         svg.append("circle")
-//             .attr("cx", s[0])
-//             .attr("cy", s[1])
-//             .attr("r", 0)
-//             .transition()
-//             .attr("r", 2);
-//     }
-// });
-
-
-
-// const randomPos = (input) => {
-//     const newVal = input + (Math.random() - 0.5) * 30;
-//     if (newVal < (cellSize - 5) && newVal > 5) {
-//         return newVal;
-//     } else {
-//         console.log(input, newVal)
-//         return randomPos(input);
-//     }
-// }
-
-// const findClosest = (points, point) => {
-//     let min = Math.Infinity
-//     let closest = points[0] || [cellSize / 2, cellSize / 2]
-//     points.forEach(p => {
-//         if (distance(point, p) <= min) {
-//             closest = p;
-//             min = distance(point, p);
-//         } else {
-//             // nothing
-//         }
-//     });
-//     return closest;
-// }
-
-// let samples = [];
-
-// function sample(width, height, numCandidates) {
-//     var bestCandidate, bestDistance = 0;
-//     for (var i = 0; i < numCandidates; ++i) {
-//         var c = [Math.random() * width, Math.random() * height],
-//             d = distance(findClosest(samples, c), c);
-//         if (d > bestDistance) {
-//             bestDistance = d;
-//             bestCandidate = c;
-//         }
-//     }
-//     samples.push(bestCandidate)
-//     return bestCandidate;
-// }
-
-// function distance(a, b) {
-//     var dx = a[0] - b[0],
-//         dy = a[1] - b[1];
-
-//     return Math.sqrt(dx * dx + dy * dy);
-// }
-
 const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -585,56 +521,20 @@ const onScroll = (domElements, cellSize) => {
 
             transitionCircles(group, groupRect)
 
-            if (groupRect.top < 500) {
+            if (groupRect.top < showThreshold) {
                 d3.select(group).attr("data-foo", d => {
                     latestWeek = d.values[(d.values.length - 1)];
                 });
             }
 
-            /* Swoopy arrows stuff */
-            const elemRect = element.getBoundingClientRect();
+            /* labeling stuff */
             const arrows = d3.select(element).select('.swoopy-arrow-group');
 
-            arrows.selectAll('path')
-                .transition()
-                .delay(0)
-                .ease(d3.easeExpOut)
-                .duration(2000)
-                .attr('stroke-opacity', elemRect.top < 396 ? 1 : 0)
-                .attr('marker-end', 'url(#arrow)')
-
-
-            arrows.selectAll('text')
-                .transition()
-                .delay(0)
-                .ease(d3.easeExpOut)
-                .duration(2000)
-                .attr('fill-opacity', elemRect.top < 396 ? 1 : 0)
-
-            d3.select(element).selectAll('marker')
-                .transition()
-                .delay(0)
-                .ease(d3.easeExpOut)
-                .duration(2000)
-                .attr('fill-opacity', elemRect.top < 396 ? 1 : 0)
-
-            // if (elemRect.top > 500) {
-            //     d3.select(group).selectAll(".dayData")
-            //         .transition()
-            //         .delay(i => {
-            //             return Math.random() * 500;
-            //         })
-            //         .ease(d3.easeExpOut)
-            //         .duration(250)
-            //         .style("opacity", "0")
-            //         .attr('r', 2.5)
-
-            // }
             d3.select(group).selectAll('.circle-label')
-                .style('opacity', groupRect.top < 482 ? 1 : 0)
+                .style('opacity', groupRect.top < showThreshold ? 1 : 0)
 
             d3.select(group).select('.circle-label-outline')
-                .style('opacity', groupRect.top < 482 ? 1 : 0)
+                .style('opacity', groupRect.top < showThreshold ? 1 : 0)
         });
 
         /* Swoopy arrows stuff */
@@ -646,7 +546,7 @@ const onScroll = (domElements, cellSize) => {
             .delay(0)
             .ease(d3.easeExpOut)
             .duration(2000)
-            .attr('stroke-opacity', elemRect.top < 396 ? 1 : 0)
+            .attr('stroke-opacity', elemRect.top < annotationsThreshold ? 1 : 0)
             .attr('marker-end', 'url(#arrow)')
 
         arrows.selectAll('text')
@@ -654,14 +554,21 @@ const onScroll = (domElements, cellSize) => {
             .delay(0)
             .ease(d3.easeExpOut)
             .duration(2000)
-            .attr('fill-opacity', elemRect.top < 396 ? 1 : 0)
+            .attr('fill-opacity', elemRect.top < annotationsThreshold ? 1 : 0)
 
         d3.select(element).selectAll('marker')
             .transition()
             .delay(0)
             .ease(d3.easeExpOut)
             .duration(2000)
-            .attr('fill-opacity', elemRect.top < 396 ? 1 : 0)
+            .attr('fill-opacity', elemRect.top < annotationsThreshold ? 1 : 0)
+
+        d3.select(element).selectAll('.on-top')
+            .transition()
+            .delay(0)
+            .ease(d3.easeLinear)
+            .duration(1000)
+            .style('opacity', elemRect.top < annotationsThreshold ? 1 : 0)
 
     });
 
@@ -671,17 +578,17 @@ const onScroll = (domElements, cellSize) => {
 const transitionCircles = (group, groupRect) => {
 
     d3.select(group).selectAll(".day-group").selectAll(".dayData")
-        .classed('has-data', d => groupRect.top < 500)
+        .classed('has-data', d => groupRect.top < showThreshold)
         .transition()
         .delay((d, i, a) => {
-            return groupRect.top < 500 ? d3.easeCubicIn((i / a.length)) * 1000 : Math.random() * 500;
+            return groupRect.top < showThreshold ? d3.easeCubicIn((i / a.length)) * 1000 : Math.random() * 500;
         })
         .ease(d3.easeExpOut)
-        .duration(groupRect.top < 500 ? 500 : 250)
+        .duration(groupRect.top < showThreshold ? 500 : 250)
         .style("transform", d => {
             return "none";
         })
-        .style("opacity", groupRect.top < 500 ? "1" : 0)
+        .style("opacity", groupRect.top < showThreshold ? "1" : 0)
         // .attr('r', 2.5)
 
     d3.select(group).selectAll("text")
@@ -689,7 +596,7 @@ const transitionCircles = (group, groupRect) => {
         .delay((d, i) => i * 100)
         .ease(d3.easeExpOut)
         .duration(2000)
-        .style("fill", d => groupRect.top < 500 ? "#000" : "#f6f6f6");
+        .style("fill", d => groupRect.top < showThreshold ? "#000" : "#f6f6f6");
 
 }
 
