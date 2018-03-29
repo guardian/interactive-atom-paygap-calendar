@@ -12,6 +12,9 @@ const cellSizeMargin = cellSize - 10;
 const container = document.querySelector('.months-container');
 const december = document.querySelector('.december');
 
+const counter = document.querySelector(".counter-sticky");
+const counterMarker = document.querySelector(".counter-marker");
+const counterParent = document.querySelector(".counter-container");
 const counterSticky = document.querySelector('.counter-number');
 const counterMonth = document.querySelector('.counter-month')
 const domElements = document.querySelectorAll('.cal-month'); // months need to be named correctly in the css classes, all lowercase
@@ -471,6 +474,18 @@ const onScroll = (domElements, cellSize) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
     let shouldBreak = false;
     let latestWeek = "";
+
+    // console.log(counterMarker.getBoundingClientRect().top)
+    if (counterMarker.getBoundingClientRect().top <= 0) {
+        counter.classList.add("unfixed-bottom");
+    } else if (counterParent.getBoundingClientRect().top <= 0) {
+        console.log("Fixed!!!")
+        counter.classList.remove("unfixed-bottom");
+        counter.classList.add("fixed");
+    } else {
+        counter.classList.remove("fixed");
+        counter.classList.remove("unfixed-bottom");
+    }
 
     domElements.forEach(element => {
         const monthAsInt = monthsArray.indexOf(element.classList[1]);
