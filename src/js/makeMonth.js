@@ -6,7 +6,7 @@ const makeMonthSvgs = (domElements, cellSize) => {
     const format = d3.timeFormat("%Y-%m-%d");
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
-    domElements.forEach(domElement => {
+    [].slice.call(domElements).forEach(domElement => {
         const monthAsInt = monthsArray.indexOf(domElement.classList[1]);
 
         // change this func to apply to a single month
@@ -59,7 +59,7 @@ const makeMonthSvgs = (domElements, cellSize) => {
             .append("rect")
             .attr('id', d => "d" + format(d))
             .attr("class", "day")
-            .style('fill', '#fff')
+            // .style('fill', '#fff')
             .attr("width", cellSize)
             .attr("height", cellSize)
             .attr('x', 0)

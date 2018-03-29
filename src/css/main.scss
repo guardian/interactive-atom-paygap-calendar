@@ -149,10 +149,17 @@
 }
 
 .day-group {
+    rect {
+        fill: #fff;
+    }
     &.weekend {
         rect {
-            fill: url(#psfll) !important;
-            // fill-opacity: 0.2;
+            fill: url(#psfll);
+        }
+        @media screen and (min-width:0\0) {
+            rect {
+                fill: #f2f2f2;
+            }
         }
     }
 }

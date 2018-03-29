@@ -224,7 +224,7 @@ const addData = (dates, domElements) => {
 
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
-    domElements.forEach(domElement => {
+    [].slice.call(domElements).forEach(domElement => {
         window.requestAnimationFrame(() => {
             const monthAsInt = monthsArray.indexOf(domElement.classList[1]);
             const firstDayOfMonth = new Date(2018, monthAsInt, 1);
@@ -423,7 +423,7 @@ const onScroll = (domElements, cellSize) => {
         counter.classList.remove("unfixed-bottom");
     }
 
-    domElements.forEach(element => {
+    [].slice.call(domElements).forEach(element => {
         const monthAsInt = monthsArray.indexOf(element.classList[1]);
 
         d3.select(counterSticky)
@@ -441,8 +441,7 @@ const onScroll = (domElements, cellSize) => {
         if (!element.weekEls) {
             element.weekEls = element.querySelectorAll(".week-group");
         }
-
-        element.weekEls.forEach(group => {
+        [].slice.call(element.weekEls).forEach(group => {
             const groupRect = group.getBoundingClientRect();
 
             transitionCircles(group, groupRect)
