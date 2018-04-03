@@ -408,3 +408,14 @@
     height: 30px;
     color: #ff7e00;
 }
+
+.circle-g {
+    will-change: opacity;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.has-data {
+    .circle-g {
+        opacity: 1 !important;
+    }
+}

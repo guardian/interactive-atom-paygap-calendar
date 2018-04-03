@@ -87,8 +87,45 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             }
         });
 
+        let dayArray = new Array(totalWeekDays).fill(null);
+
+        var counter = 0;
+        for (var day = 1; day < 365 + 1; day++) {
+            var curday = new Date(2018, 0, day);
+
+            if (curday.getDay() !== 6 && curday.getDay() !== 0) {
+                dayArray[counter] = curday;
+                counter++;
+            }
+        }
+
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+
+        // const toLog = csvWithHighlights.map(d => {
+
+        //     if (Number(d.DiffMedianHourlyPercent) > 0) {
+        //         let day = totalWeekDays - Math.floor(Number(d.DiffMedianHourlyPercent) / 100 * totalWeekDays);
+
+        //         if (day < 261) {
+        //             d.date = dayArray[day].getDate() + " " + monthNames[dayArray[day].getMonth()];
+        //         }
+
+        //         // console.log(d.date)
+        //     }
+
+        //     return d;
+
+        // });
+
+        // console.log(JSON.stringify(toLog));
+
         //add back the weekend days
         dates = addsWeekends(dates);
+
+        console.log(dates);
 
         //creates total aggregate
         var totalWomenCounter = 0;
@@ -98,7 +135,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             totalMenCounter += d.menPaidLess;
             d.womenTotalPaidLess = totalWomenCounter;
             d.menTotalPaidLess = totalMenCounter;
-        })
+        });
         var maxTotal = (totalWomenCounter > totalMenCounter) ? totalWomenCounter : totalMenCounter;
         var maxPct = maxTotal / totalCompaniesReporting;
 
@@ -150,28 +187,26 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             }
         });
 
-        let dayArray = new Array(totalWeekDays).fill(null);
-        var counter = 0;
-        for (var day = 1; day < 365 + 1; day++) {
-            var curday = new Date(2018, 0, day);
+        // let dayArray = new Array(totalWeekDays).fill(null);
+        // var counter = 0;
+        // for (var day = 1; day < 365 + 1; day++) {
+        //     var curday = new Date(2018, 0, day);
 
-            if (curday.getDay() !== 6 && curday.getDay() !== 0) {
-                dayArray[counter] = curday;
-                counter++;
-            }
-        }
+        //     if (curday.getDay() !== 6 && curday.getDay() !== 0) {
+        //         dayArray[counter] = curday;
+        //         counter++;
+        //     }
+        // }
 
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ];
+        // const monthNames = ["January", "February", "March", "April", "May", "June",
+        //     "July", "August", "September", "October", "November", "December"
+        // ];
 
         function selectedCompany(company) {
             const textBox = d3.select(".search-box-result");
             const paygap = Number(csvWithHighlights.filter(d => d.EmployerName === company)[0].DiffMedianHourlyPercent);
 
             let day = totalWeekDays - Math.floor(Math.abs(paygap) / 100 * totalWeekDays);
-
-            console.log(day)
 
             d3.select(".search-box-result").style("display", "inline-block").html(`${company}`);
 
@@ -182,7 +217,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 d3.select("#search-box-parent").attr("class", "positive");
                 d3.select(".search-stop-language").html(`stops paying women on`);
                 d3.select(".search-paygap-language").html(`a pay gap of`);
-                d3.select(".search-box-date").style("display", "inline-block").html(`${dayArray[day].getMonth()} ${monthNames[dayArray[day].getMonth()]}`);
+                d3.select(".search-box-date").style("display", "inline-block").html(`${dayArray[day].getDate()} ${monthNames[dayArray[day].getMonth()]}`);
             } else if (paygap < 0) {
                 d3.select("#search-box-parent").attr("class", "negative");
                 d3.select(".search-stop-language").html(`pays women for the full 12 months`);
@@ -204,18 +239,14 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             selectedCompany(company);
         });
 
-
-        console.log(dates);
-
-
         // addData(dates, totalWomenCounter);
         addData(dates, domElements);
 
 
         function checkScroll() {
             if (Math.abs(lastScroll - window.pageYOffset) > 36) {
-                onScroll(domElements, cellSize);
-                size = d3.selectAll(".has-data").size();
+                onScroll(domElements, cellSize, dates);
+                // size = d3.selectAll(".has-data").size();
                 lastScroll = window.pageYOffset;
             }
             window.requestAnimationFrame(() => {
@@ -277,14 +308,14 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 // .attr('class', d => `swoopy-path-${d.dateY}`)
                 .attr('fill', 'none')
                 .attr('stroke', '#000')
-                .attr('stroke-opacity', 0)
+                // .attr('stroke-opacity', 0)
                 .attr('marker-end', 'url(#arrow)')
 
             // arrow tip
             monthSvg
                 .append('marker')
                 .attr('id', 'arrow')
-                .attr('fill-opacity', 0)
+                // .attr('fill-opacity', 0)
                 .attr('viewBox', '-10 -10 20 20')
                 .attr('markerWidth', 10)
                 .attr('markerHeight', 20)
@@ -293,14 +324,14 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
 
             swoopySel.selectAll('text')
-                .attr('fill-opacity', 0)
+                // .attr('fill-opacity', 0)
                 .each(function(d) {
                     d3.select(this)
                         .text('');
                     tspans(d3.select(this), wordwrap(d.text, d.length), 20)
                 });
 
-            const onTop = monthSvg.append("g").classed("on-top", true).style('opacity', 0);
+            const onTop = monthSvg.append("g").classed("on-top", true).style('opacity', 1);
 
             annotations.filter(d => d.month === month).forEach(a => {
                 const rect = d3.select("#d" + a.date);
@@ -339,16 +370,18 @@ const addData = (dates, domElements) => {
         const daysInMonth = d3.select(domElement).selectAll(".day-group")
 
         const parent = daysInMonth
+            .append("g")
+            .attr('opacity', 0)
+            .classed("circle-g", true)
             .selectAll("circle")
             // .data(d => { return new Array(d['womenPaidLess']).fill(d) })
-            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: 4 + Math.random(), highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName }))))
-            .enter();
+            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: 4, highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName }))))
+            .enter()
 
         const circles = parent
             .append("circle")
             .attr('class', 'dayData')
             .attr('fill', '#ff7e00')
-            .attr('opacity', 0)
             .attr('r', 3)
             .attr('cx', d => d.x + cellSize / 2)
             .attr('cy', d => d.y + cellSize / 2)
@@ -591,7 +624,7 @@ const calcCirclePos = (d, i, a, xOrY) => {
     return sampled;
 }
 
-const onScroll = (domElements, cellSize) => {
+const onScroll = (domElements, cellSize, dates) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
     let shouldBreak = false;
     let latestWeek = "";
@@ -609,86 +642,70 @@ const onScroll = (domElements, cellSize) => {
 
     for (let p = 0; p < domElements.length; p++) {
         const element = domElements[p];
+        const monthBbox = element.getBoundingClientRect();
+        const monthInView = monthBbox.top < showThreshold & monthBbox.bottom > 0;
+        // const scrolledPast = monthBbox.bottom > 0;
 
-        const monthAsInt = monthsArray.indexOf(element.classList[1]);
-
-        d3.select(counterSticky)
-            .transition()
-            .duration(500)
-            .delay(0)
-            .tween('text', function() {
-                const currentVal = parseInt(this.textContent.replace(/,/g, ""));
-                const i = d3.interpolate(currentVal, size)
-                return (t) => {
-                    d3.select(counterSticky).text(numberWithCommas(parseInt(i(t))));
-                }
-            });
-
-        if (!element.weekEls) {
-            element.weekEls = element.querySelectorAll(".week-group");
-        }
-        [].slice.call(element.weekEls).forEach(group => {
-            const groupRect = group.getBoundingClientRect();
-
-            transitionCircles(group, groupRect)
-
-            if (groupRect.top < showThreshold) {
-                d3.select(group).attr("data-foo", d => {
-                    latestWeek = d.values[(d.values.length - 1)];
-                });
+        if (monthInView) {
+            if (!element.weekEls) {
+                element.weekEls = element.querySelectorAll(".week-group");
             }
 
-            /* labeling stuff */
-            const arrows = d3.select(element).select('.swoopy-arrow-group');
+            for (let c = 0; c < element.weekEls.length; c++) {
+                // if (!element.weekEls[c].transitioned) {
+                const group = element.weekEls[c];
+                const groupRect = group.getBoundingClientRect();
 
-            d3.select(group).selectAll('.circle-label')
-                .style('opacity', groupRect.top < showThreshold ? 1 : 0)
+                // transitionCircles(group, groupRect)
 
-            d3.select(group).select('.circle-label-outline')
-                .style('opacity', groupRect.top < showThreshold ? 1 : 0)
-        });
+                // group.classList.add("has-data");
 
-        /* Swoopy arrows stuff */
-        const elemRect = element.getBoundingClientRect();
-        const arrows = d3.select(element).select('.swoopy-arrow-group');
+                if (groupRect.top < showThreshold) {
+                    group.classList.add("has-data");
+                    d3.select(group).attr("data-foo", d => {
+                        latestWeek = d.values[(d.values.length - 1)];
+                    });
+                }
 
-        arrows.selectAll('path')
-            .transition()
-            .delay(0)
-            .ease(d3.easeExpOut)
-            .duration(2000)
-            .attr('stroke-opacity', elemRect.top < annotationsThreshold ? 1 : 0)
-            .attr('marker-end', 'url(#arrow)')
+                if (!group.labels) {
+                    group.labels = d3.select(group).selectAll('.circle-label, .circle-label-outline');
+                }
 
-        arrows.selectAll('text')
-            .transition()
-            .delay(0)
-            .ease(d3.easeExpOut)
-            .duration(2000)
-            .attr('fill-opacity', elemRect.top < annotationsThreshold ? 1 : 0)
+                // const arrows = d3.select(element).select('.swoopy-arrow-group');
 
-        d3.select(element).selectAll('marker')
-            .transition()
-            .delay(0)
-            .ease(d3.easeExpOut)
-            .duration(2000)
-            .attr('fill-opacity', elemRect.top < annotationsThreshold ? 1 : 0)
+                group.labels.style('opacity', groupRect.top < showThreshold ? 1 : 0)
 
-        d3.select(element).selectAll('.on-top')
-            .transition()
-            .delay(0)
-            .ease(d3.easeLinear)
-            .duration(1000)
-            .style('opacity', elemRect.top < annotationsThreshold ? 1 : 0)
+                // element.weekEls[c].transitioned = true;
 
+                // break;
+                // }
+            }
+        }
     }
 
     counterMonth.innerHTML = formatMonth(latestWeek);
+
+    const counterNewNumber = dates.filter(d => { return d.date && latestWeek.getTime() == d.date.getTime() })[0].womenTotalPaidLess;
+
+    d3.select(counterSticky)
+        .transition()
+        .duration(500)
+        .delay(0)
+        .tween('text', function() {
+            const currentVal = parseInt(this.textContent.replace(/,/g, ""));
+            const i = d3.interpolate(currentVal, counterNewNumber)
+            return (t) => {
+                d3.select(counterSticky).text(numberWithCommas(parseInt(i(t))));
+            }
+        });
 }
 
 const transitionCircles = (group, groupRect) => {
+    if (!group.days) {
+        group.days = d3.select(group).selectAll(".circle-g");
+    }
 
-    d3.select(group).selectAll(".day-group").selectAll(".dayData")
+    group.days
         .classed('has-data', d => groupRect.top < showThreshold)
         // .transition()
         // .delay((d, i, a) => {
@@ -699,7 +716,7 @@ const transitionCircles = (group, groupRect) => {
         // .style("transform", d => {
         //     return "none";
         // })
-        .style("opacity", groupRect.top < showThreshold ? "1" : 0)
+        // .style("opacity", groupRect.top < showThreshold ? "1" : 0)
         // .attr('r', 2.5)
 
     // d3.select(group).selectAll("text")
