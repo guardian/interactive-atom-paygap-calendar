@@ -110,10 +110,6 @@
     }
 }
 
-.months-container {
-    margin-top: 100px;
-}
-
 .gv-w,
 .gv-m {
     margin-bottom: 500px;
@@ -235,7 +231,7 @@
     }
 }
 
-.monday > .circle-label-outline {
+.monday>.circle-label-outline {
     @include mq(mobile) {
         text-anchor: start;
     }
@@ -244,7 +240,7 @@
     }
 }
 
-.monday > .circle-label {
+.monday>.circle-label {
     @include mq(mobile) {
         text-anchor: start;
     }
@@ -253,7 +249,7 @@
     }
 }
 
-.friday > .circle-label-outline {
+.friday>.circle-label-outline {
     @include mq(mobile) {
         text-anchor: end;
     }
@@ -262,7 +258,7 @@
     }
 }
 
-.friday > .circle-label {
+.friday>.circle-label {
     @include mq(mobile) {
         text-anchor: end;
     }
@@ -272,7 +268,7 @@
 }
 
 // search
-// awesomeplete 
+// awesomeplete
 .awesomplete [hidden] {
     display: none;
 }
@@ -291,6 +287,8 @@
 
 .awesomplete>input {
     display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
     box-sizing: border-box;
     border: 0;
     border-bottom: 2px solid #000;
@@ -421,7 +419,18 @@
     }
 }
 
+.search-container {
+    min-width: 260px;
+    @include mq(tablet) {
+        min-width: 420px;
+    }
+}
+
 #search-box-parent {
+    border: 2px solid #333;
+    box-shadow: 4px 4px 0 0 #333;
+    padding: 0px 20px 20px 20px;
+    margin-bottom: 100px;
     div {
         display: inline-block;
     }
@@ -445,13 +454,13 @@
 
 .search-box-date,
 .search-box-gap {
-    min-width: 100px;
     border: 0;
     border-bottom: 2px dotted #000;
     padding: 2px 0px 2px;
     box-sizing: border-box;
     height: 30px;
     color: #ff7e00;
+    padding: 0 5px;
 }
 
 .circle-g {
@@ -463,4 +472,13 @@
     .circle-g {
         opacity: 1 !important;
     }
+}
+
+.search-box-gap {
+    min-width: 30px;
+}
+
+.search-box-date {
+    min-width: 100px;
+    margin-left: 5px;
 }
