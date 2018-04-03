@@ -35,7 +35,7 @@ makeMonthSvgs(domElements, cellSize);
 loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx18bsE-n85w1SbaWHjiWE.json').then(res => {
     let circleAnnotations = res.annotations;
 
-    d3.csv(process.env.PATH + "/assets/latest.csv", function(error, csv) {
+    d3.csv(process.env.PATH + "/assets/latest2.csv", function(error, csv) {
         if (error) throw error;
 
         const csvWithHighlights = csv.map(d => {
@@ -213,7 +213,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
 
 
         function checkScroll() {
-            if (lastScroll !== window.pageYOffset) {
+            if (Math.abs(lastScroll - window.pageYOffset) > 36) {
                 onScroll(domElements, cellSize);
                 size = d3.selectAll(".has-data").size();
                 lastScroll = window.pageYOffset;
@@ -320,100 +320,178 @@ const addData = (dates, domElements) => {
 
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
-    domElements.forEach(domElement => {
-        window.requestAnimationFrame(() => {
-            const monthAsInt = monthsArray.indexOf(domElement.classList[1]);
-            const firstDayOfMonth = new Date(2018, monthAsInt, 1);
-            const lastDayOfMonth = d3.timeDays(firstDayOfMonth, new Date(2018, monthAsInt + 1, 1)).slice(-1)[0];
+    for (let p = 0; p < domElements.length; p++) {
+        // if (i === 3) { break; }
+        // text += "The number is " + i + "<br>";
 
-            const firstDayIndex = dates.findIndex(d => isSameDay(d.date, firstDayOfMonth));
-            const lastDayIndex = dates.findIndex(d => isSameDay(d.date, lastDayOfMonth));
+        const domElement = domElements[p];
 
-            const filteredDates = dates.slice(firstDayIndex, lastDayIndex + 1);
-            d3.select(domElement).selectAll(".day-group").data(filteredDates);
+        const monthAsInt = monthsArray.indexOf(domElement.classList[1]);
+        const firstDayOfMonth = new Date(2018, monthAsInt, 1);
+        const lastDayOfMonth = d3.timeDays(firstDayOfMonth, new Date(2018, monthAsInt + 1, 1)).slice(-1)[0];
 
-            const daysInMonth = d3.select(domElement).selectAll(".day-group")
+        const firstDayIndex = dates.findIndex(d => isSameDay(d.date, firstDayOfMonth));
+        const lastDayIndex = dates.findIndex(d => isSameDay(d.date, lastDayOfMonth));
 
-            const parent = daysInMonth
-                .selectAll("circle")
-                // .data(d => { return new Array(d['womenPaidLess']).fill(d) })
-                .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: 4 + Math.random(), highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName }))))
-                .enter();
+        const filteredDates = dates.slice(firstDayIndex, lastDayIndex + 1);
+        d3.select(domElement).selectAll(".day-group").data(filteredDates);
 
-            const circles = parent
-                .append("circle")
-                .attr('class', 'dayData')
-                .attr('fill', '#ff7e00')
-                .attr('opacity', 0)
-                .attr('r', 3)
-                .attr('cx', d => d.x + cellSize / 2)
-                .attr('cy', d => d.y + cellSize / 2)
+        const daysInMonth = d3.select(domElement).selectAll(".day-group")
 
-            // circles
-            //     .each(function(d, i, a) {
-            //         const node = d3.select(this);
+        const parent = daysInMonth
+            .selectAll("circle")
+            // .data(d => { return new Array(d['womenPaidLess']).fill(d) })
+            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: 4 + Math.random(), highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName }))))
+            .enter();
 
-            //         if (i === 0) {
-            //             const count = d.womenPaidLess;
+        const circles = parent
+            .append("circle")
+            .attr('class', 'dayData')
+            .attr('fill', '#ff7e00')
+            .attr('opacity', 0)
+            .attr('r', 3)
+            .attr('cx', d => d.x + cellSize / 2)
+            .attr('cy', d => d.y + cellSize / 2)
 
-            //             const grid = Math.ceil(Math.sqrt(count));
+        const firstHighlight = parent.filter(d => d.highlighted).filter((d, i) => i === 0)
 
-            //             sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin / (grid * 1.25)));
-            //         }
-
-            //         var s = sampler();
-
-            //         node.attr('cx', (d, i, a) => {
-            //                 return s[0] + 5;
-            //             })
-            //             .attr('cy', (d, i, a) => s[1] + 5)
-            //     });
-
-            const firstHighlight = parent.filter(d => d.highlighted).filter((d, i) => i === 0)
-
-            firstHighlight.append("text")
-                .classed('circle-label', true)
-                .attr("x", cellSize / 2)
-                .attr('y', cellSize / 2)
-                .attr("text-anchor", "middle")
-                .attr('dy', 18)
-                .style('stroke', 'white')
-                .style('stroke-width', '3px')
-                .style('opacity', 0)
-                .text(d => d.highlightCompanyName)
-                // .each(function(d) {
-                //     console.log(d, d.highlightCompanyName, this)
-                //     d3.select(this)
-                //         .text('');
-                //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
-                // });
+        firstHighlight.append("text")
+            .classed('circle-label', true)
+            .attr("x", cellSize / 2)
+            .attr('y', cellSize / 2)
+            .attr("text-anchor", "middle")
+            .attr('dy', 18)
+            .style('stroke', 'white')
+            .style('stroke-width', '3px')
+            .style('opacity', 0)
+            .text(d => d.highlightCompanyName)
+            // .each(function(d) {
+            //     console.log(d, d.highlightCompanyName, this)
+            //     d3.select(this)
+            //         .text('');
+            //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
+            // });
 
 
-            firstHighlight.append('text')
-                .classed('circle-label-outline', true)
-                .attr("x", cellSize / 2)
-                .attr('y', cellSize / 2)
-                .attr('dy', 18)
-                .attr("text-anchor", "middle")
-                .style('opacity', 0)
-                .text(d => d.highlightCompanyName)
-                // .each(function(d) {
-                //     console.log(d, d.highlightCompanyName, this)
-                //     d3.select(this)
-                //         .text('');
-                //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
-                // });
+        firstHighlight.append('text')
+            .classed('circle-label-outline', true)
+            .attr("x", cellSize / 2)
+            .attr('y', cellSize / 2)
+            .attr('dy', 18)
+            .attr("text-anchor", "middle")
+            .style('opacity', 0)
+            .text(d => d.highlightCompanyName)
+            // .each(function(d) {
+            //     console.log(d, d.highlightCompanyName, this)
+            //     d3.select(this)
+            //         .text('');
+            //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
+            // });
 
-            daysInMonth.select('.dayData')
-                // .attr('r', d => d.highlighted ? 6 : 3)
-                .attr('stroke', d => d.highlighted ? 'black' : 'none')
+        daysInMonth.select('.dayData')
+            // .attr('r', d => d.highlighted ? 6 : 3)
+            .attr('stroke', d => d.highlighted ? 'black' : 'none')
 
-            d3.select(domElement).selectAll(".day-group")
-                .classed('weekend', function(d) {
-                    return d.isWeekend === true;
-                })
-        });
-    })
+        d3.select(domElement).selectAll(".day-group")
+            .classed('weekend', function(d) {
+                return d.isWeekend === true;
+            })
+    }
+
+    // domElements.forEach(domElement => {
+    //     window.requestAnimationFrame(() => {
+    //         const monthAsInt = monthsArray.indexOf(domElement.classList[1]);
+    //         const firstDayOfMonth = new Date(2018, monthAsInt, 1);
+    //         const lastDayOfMonth = d3.timeDays(firstDayOfMonth, new Date(2018, monthAsInt + 1, 1)).slice(-1)[0];
+
+    //         const firstDayIndex = dates.findIndex(d => isSameDay(d.date, firstDayOfMonth));
+    //         const lastDayIndex = dates.findIndex(d => isSameDay(d.date, lastDayOfMonth));
+
+    //         const filteredDates = dates.slice(firstDayIndex, lastDayIndex + 1);
+    //         d3.select(domElement).selectAll(".day-group").data(filteredDates);
+
+    //         const daysInMonth = d3.select(domElement).selectAll(".day-group")
+
+    //         const parent = daysInMonth
+    //             .selectAll("circle")
+    //             // .data(d => { return new Array(d['womenPaidLess']).fill(d) })
+    //             .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: 4 + Math.random(), highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName }))))
+    //             .enter();
+
+    //         const circles = parent
+    //             .append("circle")
+    //             .attr('class', 'dayData')
+    //             .attr('fill', '#ff7e00')
+    //             .attr('opacity', 0)
+    //             .attr('r', 3)
+    //             .attr('cx', d => d.x + cellSize / 2)
+    //             .attr('cy', d => d.y + cellSize / 2)
+
+    //         // circles
+    //         //     .each(function(d, i, a) {
+    //         //         const node = d3.select(this);
+
+    //         //         if (i === 0) {
+    //         //             const count = d.womenPaidLess;
+
+    //         //             const grid = Math.ceil(Math.sqrt(count));
+
+    //         //             sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin / (grid * 1.25)));
+    //         //         }
+
+    //         //         var s = sampler();
+
+    //         //         node.attr('cx', (d, i, a) => {
+    //         //                 return s[0] + 5;
+    //         //             })
+    //         //             .attr('cy', (d, i, a) => s[1] + 5)
+    //         //     });
+
+    //         const firstHighlight = parent.filter(d => d.highlighted).filter((d, i) => i === 0)
+
+    //         firstHighlight.append("text")
+    //             .classed('circle-label', true)
+    //             .attr("x", cellSize / 2)
+    //             .attr('y', cellSize / 2)
+    //             .attr("text-anchor", "middle")
+    //             .attr('dy', 18)
+    //             .style('stroke', 'white')
+    //             .style('stroke-width', '3px')
+    //             .style('opacity', 0)
+    //             .text(d => d.highlightCompanyName)
+    //             // .each(function(d) {
+    //             //     console.log(d, d.highlightCompanyName, this)
+    //             //     d3.select(this)
+    //             //         .text('');
+    //             //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
+    //             // });
+
+
+    //         firstHighlight.append('text')
+    //             .classed('circle-label-outline', true)
+    //             .attr("x", cellSize / 2)
+    //             .attr('y', cellSize / 2)
+    //             .attr('dy', 18)
+    //             .attr("text-anchor", "middle")
+    //             .style('opacity', 0)
+    //             .text(d => d.highlightCompanyName)
+    //             // .each(function(d) {
+    //             //     console.log(d, d.highlightCompanyName, this)
+    //             //     d3.select(this)
+    //             //         .text('');
+    //             //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
+    //             // });
+
+    //         daysInMonth.select('.dayData')
+    //             // .attr('r', d => d.highlighted ? 6 : 3)
+    //             .attr('stroke', d => d.highlighted ? 'black' : 'none')
+
+    //         d3.select(domElement).selectAll(".day-group")
+    //             .classed('weekend', function(d) {
+    //                 return d.isWeekend === true;
+    //             })
+    //     });
+    // })
 }
 
 function poissonDiscSampler(width, height, radius) {
@@ -522,7 +600,6 @@ const onScroll = (domElements, cellSize) => {
     if (counterMarker.getBoundingClientRect().top <= 0) {
         counter.classList.add("unfixed-bottom");
     } else if (counterParent.getBoundingClientRect().top <= 0) {
-        console.log("Fixed!!!")
         counter.classList.remove("unfixed-bottom");
         counter.classList.add("fixed");
     } else {
@@ -530,7 +607,9 @@ const onScroll = (domElements, cellSize) => {
         counter.classList.remove("unfixed-bottom");
     }
 
-    domElements.forEach(element => {
+    for (let p = 0; p < domElements.length; p++) {
+        const element = domElements[p];
+
         const monthAsInt = monthsArray.indexOf(element.classList[1]);
 
         d3.select(counterSticky)
@@ -603,7 +682,7 @@ const onScroll = (domElements, cellSize) => {
             .duration(1000)
             .style('opacity', elemRect.top < annotationsThreshold ? 1 : 0)
 
-    });
+    }
 
     counterMonth.innerHTML = formatMonth(latestWeek);
 }
@@ -612,24 +691,24 @@ const transitionCircles = (group, groupRect) => {
 
     d3.select(group).selectAll(".day-group").selectAll(".dayData")
         .classed('has-data', d => groupRect.top < showThreshold)
-        .transition()
-        .delay((d, i, a) => {
-            return groupRect.top < showThreshold ? d3.easeCubicIn((i / a.length)) * 1000 : Math.random() * 500;
-        })
-        // .ease(d3.easeExpOut)
-        .duration(0)
-        .style("transform", d => {
-            return "none";
-        })
+        // .transition()
+        // .delay((d, i, a) => {
+        //     return groupRect.top < showThreshold ? d3.easeCubicIn((i / a.length)) * 1000 : Math.random() * 500;
+        // })
+        // // .ease(d3.easeExpOut)
+        // .duration(0)
+        // .style("transform", d => {
+        //     return "none";
+        // })
         .style("opacity", groupRect.top < showThreshold ? "1" : 0)
         // .attr('r', 2.5)
 
-    d3.select(group).selectAll("text")
-        .transition()
-        .delay((d, i) => i * 100)
-        .ease(d3.easeExpOut)
-        .duration(2000)
-        .style("fill", d => groupRect.top < showThreshold ? "#000" : "#f6f6f6");
+    // d3.select(group).selectAll("text")
+    //     .transition()
+    //     .delay((d, i) => i * 100)
+    //     .ease(d3.easeExpOut)
+    //     .duration(500)
+    //     .style("fill", d => groupRect.top < showThreshold ? "#000" : "#f6f6f6");
 
 }
 

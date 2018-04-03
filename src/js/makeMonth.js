@@ -74,6 +74,7 @@ const makeMonthSvgs = (domElements, cellSize) => {
                     .attr('x', 4)
                     .classed('date-label', true)
                     .style("opacity", "1")
+                    .style("fill", "#333")
             });
 
         svg.append('g').classed('swoopy-arrow-group', true)
