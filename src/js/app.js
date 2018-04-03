@@ -1,5 +1,7 @@
 import makeMonthSvgs from './makeMonth';
+
 import * as d3 from "d3"
+
 import { swoopyDrag } from 'd3-swoopy-drag';
 import loadJson from '../components/load-json';
 import Awesomeplete from './awesomplete.js'
@@ -108,10 +110,10 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
 
         //search box
 
-        const parent = d3.select(".search-box-parent");
+        const parent = d3.select("#search-box-parent");
 
         const searchBox = parent.insert("div", ":first-child").classed("search-container", true);
-        const input = searchBox.append("input");
+        const input = searchBox.append("input").classed("colour", true);
 
         input.attr("placeholder", "Find a company …");
 
@@ -169,11 +171,31 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
 
             let day = totalWeekDays - Math.floor(Math.abs(paygap) / 100 * totalWeekDays);
 
-            d3.select(".search-box-result").html(`${company}`);
+            console.log(day)
 
-            d3.select(".search-box-date").html(`${dayArray[day].getMonth()} ${monthNames[dayArray[day].getMonth()]}`);
+            d3.select(".search-box-result").style("display", "inline-block").html(`${company}`);
 
-            d3.select(".search-box-gap").html(`${paygap}%`);
+            d3.select(".search-box-gap").style("display", "inline-block").html(`${Math.abs(paygap)}%`);
+
+
+            if (paygap > 0) {
+                d3.select("#search-box-parent").attr("class", "positive");
+                d3.select(".search-stop-language").html(`stops paying women on`);
+                d3.select(".search-paygap-language").html(`a pay gap of`);
+                d3.select(".search-box-date").style("display", "inline-block").html(`${dayArray[day].getMonth()} ${monthNames[dayArray[day].getMonth()]}`);
+            } else if (paygap < 0) {
+                d3.select("#search-box-parent").attr("class", "negative");
+                d3.select(".search-stop-language").html(`pays women for the full 12 months`);
+                d3.select(".search-paygap-language").html(`women outearn men by `);
+                d3.select(".search-box-date").style("display", "none").html(``);
+            } else {
+                d3.select("#search-box-parent").attr("class", "neutral");
+                d3.select(".search-stop-language").html(`pays women for the full 12 months`);
+                d3.select(".search-paygap-language").html(`there is no pay gap between men and women`);
+                d3.select(".search-box-gap").style("display", "none").html(``);
+                d3.select(".search-box-date").style("display", "none").html(``);
+            }
+
         }
 
         document.addEventListener("awesomplete-selectcomplete", function(e) {
@@ -359,6 +381,12 @@ const addData = (dates, domElements) => {
                 .style('stroke-width', '3px')
                 .style('opacity', 0)
                 .text(d => d.highlightCompanyName)
+                // .each(function(d) {
+                //     console.log(d, d.highlightCompanyName, this)
+                //     d3.select(this)
+                //         .text('');
+                //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
+                // });
 
 
             firstHighlight.append('text')
@@ -369,7 +397,12 @@ const addData = (dates, domElements) => {
                 .attr("text-anchor", "middle")
                 .style('opacity', 0)
                 .text(d => d.highlightCompanyName)
-
+                // .each(function(d) {
+                //     console.log(d, d.highlightCompanyName, this)
+                //     d3.select(this)
+                //         .text('');
+                //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
+                // });
 
             daysInMonth.select('.dayData')
                 // .attr('r', d => d.highlighted ? 6 : 3)
