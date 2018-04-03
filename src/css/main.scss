@@ -227,6 +227,7 @@
 .circle-label-outline {
     @include mq(mobile) {
         @include fs-textSans(2);
+        text-anchor: middle;
     }
 }
 

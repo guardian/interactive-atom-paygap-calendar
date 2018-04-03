@@ -211,7 +211,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
 
             if (paygap > 0) {
                 d3.select("#search-box-parent").attr("class", "positive");
-                d3.select(".search-stop-language").html(`stops paying women on`);
+                d3.select(".search-stop-language").html(`effectively stops paying women on`);
                 d3.select(".search-paygap-language").html(`a pay gap of`);
                 d3.select(".search-box-date").style("display", "inline-block").html(`${dayArray[day].getDate()} ${monthNames[dayArray[day].getMonth()]}`);
             } else if (paygap < 0) {
