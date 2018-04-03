@@ -227,7 +227,7 @@
 }
 
 // search
-// awesomeplete 
+// awesomeplete
 .awesomplete [hidden] {
     display: none;
 }
@@ -246,6 +246,8 @@
 
 .awesomplete>input {
     display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
     box-sizing: border-box;
     border: 0;
     border-bottom: 2px solid #000;
@@ -376,7 +378,19 @@
     }
 }
 
+.search-container {
+  min-width: 260px;
+
+    @include mq(tablet) {
+      min-width:420px;
+    }
+}
+
 #search-box-parent {
+
+  border: 2px solid #333;
+  box-shadow: 4px 4px 0 0 #333;
+  padding: 0px 20px 20px 20px;
     div {
         display: inline-block;
     }
@@ -400,11 +414,21 @@
 
 .search-box-date,
 .search-box-gap {
-    min-width: 100px;
+
     border: 0;
     border-bottom: 2px dotted #000;
     padding: 2px 0px 2px;
     box-sizing: border-box;
     height: 30px;
     color: #ff7e00;
+    padding: 0 5px;
+}
+
+.search-box-gap {
+  min-width: 30px;
+}
+
+.search-box-date {
+  min-width: 100px;
+  margin-left: 5px;
 }
