@@ -24,7 +24,7 @@ const domElements = document.querySelectorAll('.cal-month'); // months need to b
 let size = 0;
 let lastScroll = null;
 
-const showThreshold = window.innerHeight / 1.25;
+const showThreshold = window.innerHeight / 2;
 const annotationsThreshold = window.innerHeight / 2;
 
 var formatMonth = d3.timeFormat("%e %B");
@@ -87,8 +87,45 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             }
         });
 
+        let dayArray = new Array(totalWeekDays).fill(null);
+
+        var counter = 0;
+        for (var day = 1; day < 365 + 1; day++) {
+            var curday = new Date(2018, 0, day);
+
+            if (curday.getDay() !== 6 && curday.getDay() !== 0) {
+                dayArray[counter] = curday;
+                counter++;
+            }
+        }
+
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+
+        // const toLog = csvWithHighlights.map(d => {
+
+        //     if (Number(d.DiffMedianHourlyPercent) > 0) {
+        //         let day = totalWeekDays - Math.floor(Number(d.DiffMedianHourlyPercent) / 100 * totalWeekDays);
+
+        //         if (day < 261) {
+        //             d.date = dayArray[day].getDate() + " " + monthNames[dayArray[day].getMonth()];
+        //         }
+
+        //         // console.log(d.date)
+        //     }
+
+        //     return d;
+
+        // });
+
+        // console.log(JSON.stringify(toLog));
+
         //add back the weekend days
         dates = addsWeekends(dates);
+
+        console.log(dates);
 
         //creates total aggregate
         var totalWomenCounter = 0;
@@ -98,7 +135,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             totalMenCounter += d.menPaidLess;
             d.womenTotalPaidLess = totalWomenCounter;
             d.menTotalPaidLess = totalMenCounter;
-        })
+        });
         var maxTotal = (totalWomenCounter > totalMenCounter) ? totalWomenCounter : totalMenCounter;
         var maxPct = maxTotal / totalCompaniesReporting;
 
@@ -150,20 +187,20 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             }
         });
 
-        let dayArray = new Array(totalWeekDays).fill(null);
-        var counter = 0;
-        for (var day = 1; day < 365 + 1; day++) {
-            var curday = new Date(2018, 0, day);
+        // let dayArray = new Array(totalWeekDays).fill(null);
+        // var counter = 0;
+        // for (var day = 1; day < 365 + 1; day++) {
+        //     var curday = new Date(2018, 0, day);
 
-            if (curday.getDay() !== 6 && curday.getDay() !== 0) {
-                dayArray[counter] = curday;
-                counter++;
-            }
-        }
+        //     if (curday.getDay() !== 6 && curday.getDay() !== 0) {
+        //         dayArray[counter] = curday;
+        //         counter++;
+        //     }
+        // }
 
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ];
+        // const monthNames = ["January", "February", "March", "April", "May", "June",
+        //     "July", "August", "September", "October", "November", "December"
+        // ];
 
         function selectedCompany(company) {
             const textBox = d3.select(".search-box-result");
@@ -180,7 +217,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 d3.select("#search-box-parent").attr("class", "positive");
                 d3.select(".search-stop-language").html(`stops paying women on`);
                 d3.select(".search-paygap-language").html(`a pay gap of`);
-                d3.select(".search-box-date").style("display", "inline-block").html(`${dayArray[day].getMonth()} ${monthNames[dayArray[day].getMonth()]}`);
+                d3.select(".search-box-date").style("display", "inline-block").html(`${dayArray[day].getDate()} ${monthNames[dayArray[day].getMonth()]}`);
             } else if (paygap < 0) {
                 d3.select("#search-box-parent").attr("class", "negative");
                 d3.select(".search-stop-language").html(`pays women for the full 12 months`);
@@ -208,8 +245,8 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
 
         function checkScroll() {
             if (Math.abs(lastScroll - window.pageYOffset) > 36) {
-                onScroll(domElements, cellSize);
-                size = d3.selectAll(".has-data").size();
+                onScroll(domElements, cellSize, dates);
+                // size = d3.selectAll(".has-data").size();
                 lastScroll = window.pageYOffset;
             }
             window.requestAnimationFrame(() => {
@@ -237,47 +274,46 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             });
         }
 
-        const annotations = [
-  {
-    "month": "january",
-    "dateX": 40,
-    "dateY": -224,
-    "path": "M325,592C286,574,267,537,266,490",
-    "text": "17 January is the first day when a company stops paying women. A 95.5% pay gap",
-    "date": "2018-01-17",
-    "textOffset": [
-      331,
-      597
-    ],
-    "length": 30
-  },
-  {
-    "month": "april",
-    "dateX": 0,
-    "dateY": -224,
-    "path": "M442,589C488,556,520,473,494,408",
-    "text": "Only eight of Ryanair’s 554 UK-based pilots are female, while women make up more than two-thirds of the low-paid cabin crew",
-    "date": "2018-04-13",
-    "textOffset": [
-      192,
-      599
-    ],
-    "length": 30
-  },
-  {
-    "month": "june",
-    "dateX": 0,
-    "dateY": -224,
-    "path": "M320,320C331,352,375,420,463,443",
-    "text": "Phase Eight employs only 44 men out of a workforce of 1,754 and all but five work in the corporate head office",
-    "date": "2018-06-15",
-    "textOffset": [
-      184,
-      242
-    ],
-    "length": 30
-  }
-]
+        const annotations = [{
+                "month": "january",
+                "dateX": 40,
+                "dateY": -224,
+                "path": "M325,592C286,574,267,537,266,490",
+                "text": "17 January is the first day when a company stops paying women. A 95.5% pay gap",
+                "date": "2018-01-17",
+                "textOffset": [
+                    331,
+                    597
+                ],
+                "length": 30
+            },
+            {
+                "month": "april",
+                "dateX": 0,
+                "dateY": -224,
+                "path": "M442,589C488,556,520,473,494,408",
+                "text": "Only eight of Ryanair’s 554 UK-based pilots are female, while women make up more than two-thirds of the low-paid cabin crew",
+                "date": "2018-04-13",
+                "textOffset": [
+                    192,
+                    599
+                ],
+                "length": 30
+            },
+            {
+                "month": "june",
+                "dateX": 0,
+                "dateY": -224,
+                "path": "M320,320C331,352,375,420,463,443",
+                "text": "Phase Eight employs only 44 men out of a workforce of 1,754 and all but five work in the corporate head office",
+                "date": "2018-06-15",
+                "textOffset": [
+                    184,
+                    242
+                ],
+                "length": 30
+            }
+        ]
 
         const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 
@@ -286,7 +322,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .select("svg")
 
             const swoopy = swoopyDrag()
-                    //.draggable(true)
+                //.draggable(true)
                 .x(d => d.dateX)
                 .y(d => d.dateY)
                 .on('drag', () => window.annotations = annotations)
@@ -299,14 +335,14 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 // .attr('class', d => `swoopy-path-${d.dateY}`)
                 .attr('fill', 'none')
                 .attr('stroke', '#000')
-                .attr('stroke-opacity', 0)
+                // .attr('stroke-opacity', 0)
                 .attr('marker-end', 'url(#arrow)')
 
             // arrow tip
             monthSvg
                 .append('marker')
                 .attr('id', 'arrow')
-                .attr('fill-opacity', 0)
+                // .attr('fill-opacity', 0)
                 .attr('viewBox', '-10 -10 20 20')
                 .attr('markerWidth', 10)
                 .attr('markerHeight', 20)
@@ -315,14 +351,14 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
 
             swoopySel.selectAll('text')
-                .attr('fill-opacity', 0)
+                // .attr('fill-opacity', 0)
                 .each(function(d) {
                     d3.select(this)
                         .text('');
-                    tspans(d3.select(this), wordwrap(d.text, d.length), 20)
+                    tspans(d3.select(this), wordwrap(d.text, d.length), 16)
                 });
 
-            const onTop = monthSvg.append("g").classed("on-top", true).style('opacity', 0);
+            const onTop = monthSvg.append("g").classed("on-top", true).style('opacity', 1);
 
             annotations.filter(d => d.month === month).forEach(a => {
                 const rect = d3.select("#d" + a.date);
@@ -377,15 +413,15 @@ const addData = (dates, domElements) => {
 
         const calcDistanceRadius = (windowWidth) => {
             if (windowWidth < 400) {
-                return 1;
-            } else if (windowWidth < 560) {
-                return 1.2;
-            } else if (windowWidth < 740) {
                 return 1.5;
-            } else if (windowWidth < 1140) {
-                return 1.8;
-            } else if (windowWidth >= 1140) {
+            } else if (windowWidth < 560) {
                 return 2;
+            } else if (windowWidth < 740) {
+                return 2;
+            } else if (windowWidth < 1140) {
+                return 2.5;
+            } else if (windowWidth >= 1140) {
+                return 3;
             }
         }
 
@@ -393,15 +429,18 @@ const addData = (dates, domElements) => {
         const distanceRadius = calcDistanceRadius(windowWidth);
 
         const parent = daysInMonth
+            .append("g")
+            .attr('opacity', 0)
+            .classed("circle-g", true)
             .selectAll("circle")
-            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: distanceRadius + Math.random(), highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName, isFriday: d.isFriday, isMonday: d.isMonday }))))
+            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: distanceRadius, highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName, isFriday: d.isFriday, isMonday: d.isMonday }))))
             .enter();
 
         const circles = parent
             .append("circle")
             .attr('class', 'dayData')
             .attr('fill', '#ff7e00')
-            .attr('opacity', 0)
+            // .attr('opacity', 0)
             .attr('r', circleRadius)
             .attr('cx', d => d.x + cellSize / 2)
             .attr('cy', d => d.y + cellSize / 2)
@@ -461,30 +500,27 @@ const addData = (dates, domElements) => {
         days.classed('friday', d => d.isFriday)
 
         const monthSvg = month.select('svg');
-        const textOnTop = monthSvg.append("g").classed("text-on-top", true)
-        
-        const labels = monthSvg.selectAll('.circle-label');
-        const outlines = monthSvg.selectAll('.circle-label-outline');
+        const textOnTop = monthSvg.append("g").classed("text-on-top", true);
 
-        labels.each(function (a) {
+        monthSvg.selectAll('.circle-label, .circle-label-outline').each(function(a) {
             const text = d3.select(this);
-            const textTransform = text.node().parentNode.getAttribute("transform");
-            const removed = text.attr("transform", textTransform);
+            const textTransform = text.node().parentNode.parentNode.getAttribute("transform");
+            const removed = text.attr("transform", textTransform).remove();
 
-            textOnTop.append(function () {
-                return text.node();
-            })        
-        });
-
-        outlines.each(function (a) {
-            const text = d3.select(this);
-            const textTransform = text.node().parentNode.getAttribute("transform");
-            const removed = text.attr("transform", textTransform);
-
-            textOnTop.append(function () {
-                return text.node();
+            textOnTop.append(function() {
+                return removed.node();
             })
         });
+
+        // monthSvg.selectAll('.circle-label-outline').each(function(a) {
+        //     const text = d3.select(this);
+        //     const textTransform = text.node().parentNode.getAttribute("transform");
+        //     const removed = text.attr("transform", textTransform);
+
+        //     textOnTop.append(function() {
+        //         return text.node();
+        //     })
+        // });
     }
 }
 
@@ -585,7 +621,7 @@ const calcCirclePos = (d, i, a, xOrY) => {
     return sampled;
 }
 
-const onScroll = (domElements, cellSize) => {
+const onScroll = (domElements, cellSize, dates) => {
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
     let shouldBreak = false;
     let latestWeek = "";
@@ -603,86 +639,68 @@ const onScroll = (domElements, cellSize) => {
 
     for (let p = 0; p < domElements.length; p++) {
         const element = domElements[p];
+        const monthBbox = element.getBoundingClientRect();
+        const monthInView = monthBbox.top < window.innerHeight & monthBbox.bottom > 0;
+        // const scrolledPast = monthBbox.bottom > 0;
 
-        const monthAsInt = monthsArray.indexOf(element.classList[1]);
-
-        d3.select(counterSticky)
-            .transition()
-            .duration(500)
-            .delay(0)
-            .tween('text', function() {
-                const currentVal = parseInt(this.textContent.replace(/,/g, ""));
-                const i = d3.interpolate(currentVal, size)
-                return (t) => {
-                    d3.select(counterSticky).text(numberWithCommas(parseInt(i(t))));
-                }
-            });
-
-        if (!element.weekEls) {
-            element.weekEls = element.querySelectorAll(".week-group");
-        }
-        [].slice.call(element.weekEls).forEach(group => {
-            const groupRect = group.getBoundingClientRect();
-
-            transitionCircles(group, groupRect)
-
-            if (groupRect.top < showThreshold) {
-                d3.select(group).attr("data-foo", d => {
-                    latestWeek = d.values[(d.values.length - 1)];
-                });
+        if (monthInView) {
+            if (!element.weekEls) {
+                element.weekEls = element.querySelectorAll(".week-group");
             }
 
-            /* labeling stuff */
-            const arrows = d3.select(element).select('.swoopy-arrow-group');
+            for (let c = 0; c < element.weekEls.length; c++) {
+                const group = element.weekEls[c];
+                const groupRect = group.getBoundingClientRect();
 
-            d3.select(group).selectAll('.circle-label')
-                .style('opacity', groupRect.top < showThreshold ? 1 : 0)
+                if (groupRect.top < showThreshold) {
+                    group.classList.add("has-data");
+                    d3.select(group).attr("data-foo", d => {
+                        latestWeek = d.values[(d.values.length - 1)];
+                    });
+                } else {
+                    group.classList.remove("has-data");
+                }
 
-            d3.select(group).select('.circle-label-outline')
-                .style('opacity', groupRect.top < showThreshold ? 1 : 0)
-        });
+                if (!group.labels) {
+                    group.labels = d3.select(group).selectAll('.circle-label, .circle-label-outline');
+                }
 
-        /* Swoopy arrows stuff */
-        const elemRect = element.getBoundingClientRect();
-        const arrows = d3.select(element).select('.swoopy-arrow-group');
-
-        arrows.selectAll('path')
-            .transition()
-            .delay(0)
-            .ease(d3.easeExpOut)
-            .duration(2000)
-            .attr('stroke-opacity', elemRect.top < annotationsThreshold ? 1 : 0)
-            .attr('marker-end', 'url(#arrow)')
-
-        arrows.selectAll('text')
-            .transition()
-            .delay(0)
-            .ease(d3.easeExpOut)
-            .duration(2000)
-            .attr('fill-opacity', elemRect.top < annotationsThreshold ? 1 : 0)
-
-        d3.select(element).selectAll('marker')
-            .transition()
-            .delay(0)
-            .ease(d3.easeExpOut)
-            .duration(2000)
-            .attr('fill-opacity', elemRect.top < annotationsThreshold ? 1 : 0)
-
-        d3.select(element).selectAll('.on-top')
-            .transition()
-            .delay(0)
-            .ease(d3.easeLinear)
-            .duration(1000)
-            .style('opacity', elemRect.top < annotationsThreshold ? 1 : 0)
-
+                group.labels.style('opacity', groupRect.top < showThreshold ? 1 : 0)
+            }
+        }
     }
 
     counterMonth.innerHTML = formatMonth(latestWeek);
+
+    const counterNewNumberFilter = dates.filter(d => { return d.date && latestWeek && latestWeek.getTime() && latestWeek.getTime() == d.date.getTime() })[0];
+
+    let counterNewNumber;
+
+    if (counterNewNumberFilter) {
+        counterNewNumber = counterNewNumberFilter.womenTotalPaidLess;
+    } else {
+        counterNewNumber = 0;
+    }
+
+    d3.select(counterSticky)
+        .transition()
+        .duration(500)
+        .delay(0)
+        .tween('text', function() {
+            const currentVal = parseInt(this.textContent.replace(/,/g, ""));
+            const i = d3.interpolate(currentVal, counterNewNumber)
+            return (t) => {
+                d3.select(counterSticky).text(numberWithCommas(parseInt(i(t))));
+            }
+        });
 }
 
 const transitionCircles = (group, groupRect) => {
+    if (!group.days) {
+        group.days = d3.select(group).selectAll(".circle-g");
+    }
 
-    d3.select(group).selectAll(".day-group").selectAll(".dayData")
+    group.days
         .classed('has-data', d => groupRect.top < showThreshold)
         // .transition()
         // .delay((d, i, a) => {
@@ -693,7 +711,7 @@ const transitionCircles = (group, groupRect) => {
         // .style("transform", d => {
         //     return "none";
         // })
-        .style("opacity", groupRect.top < showThreshold ? "1" : 0)
+        // .style("opacity", groupRect.top < showThreshold ? "1" : 0)
         // .attr('r', 2.5)
 
     // d3.select(group).selectAll("text")
