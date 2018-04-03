@@ -473,8 +473,17 @@
     transition: opacity 0.5s ease-in-out;
 }
 
+.text-on-top {
+    opacity: 0;
+    will-change: opacity;
+    transition: opacity 0.5s ease-in-out;
+}
+
 .has-data {
     .circle-g {
+        opacity: 1 !important;
+    }
+    .text-on-top {
         opacity: 1 !important;
     }
 }

@@ -533,17 +533,20 @@ const addData = (dates, domElements) => {
         days.classed('monday', d => d.isMonday)
         days.classed('friday', d => d.isFriday)
 
-        const monthSvg = month.select('svg');
-        const textOnTop = monthSvg.append("g").classed("text-on-top", true);
+        const monthSvg = month.select('svg').selectAll(".week-group");
 
-        monthSvg.selectAll('.circle-label, .circle-label-outline').each(function(a) {
-            const text = d3.select(this);
-            const textTransform = text.node().parentNode.parentNode.getAttribute("transform");
-            const removed = text.attr("transform", textTransform).remove();
+        monthSvg.each(function() {
+            const textOnTop = d3.select(this).append("g").classed("text-on-top", true);
 
-            textOnTop.append(function() {
-                return removed.node();
-            })
+            d3.select(this).selectAll('.circle-label, .circle-label-outline').each(function(a) {
+                const text = d3.select(this);
+                const textTransform = text.node().parentNode.parentNode.getAttribute("transform");
+                const removed = text.attr("transform", textTransform).remove();
+
+                textOnTop.append(function() {
+                    return removed.node();
+                })
+            });
         });
 
         // monthSvg.selectAll('.circle-label-outline').each(function(a) {
