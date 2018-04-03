@@ -270,73 +270,85 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             });
         }
 
-        const annotations = [
-  {
-    "month": "january",
-    "dateX": 40,
-    "dateY": -224,
-    "path": "M312,577C284,557,258,524,266,490",
-    "text": "With a 95.5% gap, the first company stops paying women",
-    "date": "2018-01-17",
-    "textOffset": [
-      320,
-      595
-    ],
-    "length": 18
-  },
-  {
-    "month": "february",
-    "dateX": 40,
-    "dateY": -224,
-    "path": "M332,576C331,557,337,526,389,532",
-    "text": "Already working for free this year",
-    "date": "2018-02-23",
-    "textOffset": [
-      320,
-      595
-    ],
-    "length": 18
-  },
-  {
-    "month": "april",
-    "dateX": 0,
-    "dateY": -224,
-    "path": "M312,587C269,505,293,372,428,358",
-    "text": "Only 8 women in higher-paid  pilot roles",
-    "date": "2018-04-13",
-    "textOffset": [
-      276,
-      608
-    ],
-    "length": 20
-  },
-  {
-    "month": "may",
-    "dateX": 0,
-    "dateY": -224,
-    "path": "M136,604C231,507,433,543,461,572",
-    "text": "First FTSE100 company",
-    "date": "2018-05-28",
-    "textOffset": [
-      449,
-      599
-    ],
-    "length": 16
-  },
-  {
-    "month": "june",
-    "dateX": 0,
-    "dateY": -220,
-    "path": "M109,294C155,379,259,442,435,441",
-    "text": "44 of 1,754 employees are men at Phase Eight",
-    "date": "2018-06-15",
-    "textOffset": [
-      85,
-      259
-    ],
-    "length": 25
-  }
-]
+        const annotations = [{
+                "month": "january",
+                "dateX": 40,
+                "dateY": -224,
+                "path": "M312,577C284,557,258,524,266,490",
+                "text": "With a 95.5% gap, the first company stops paying women",
+                "date": "2018-01-17",
+                "textOffset": [
+                    320,
+                    595
+                ],
+                "length": 18
+            },
+            {
+                "month": "february",
+                "dateX": 40,
+                "dateY": -224,
+                "path": "M332,576C331,557,337,526,389,532",
+                "text": "Already working for free this year",
+                "date": "2018-02-23",
+                "textOffset": [
+                    320,
+                    595
+                ],
+                "length": 18
+            },
+            {
+                "month": "april",
+                "dateX": 0,
+                "dateY": -224,
+                "path": "M312,587C269,505,293,372,428,358",
+                "text": "Only 8 women in higher-paid  pilot roles",
+                "date": "2018-04-13",
+                "textOffset": [
+                    276,
+                    608
+                ],
+                "length": 20
+            },
+            {
+                "month": "may",
+                "dateX": 0,
+                "dateY": -224,
+                "path": "M136,604C231,507,433,543,461,572",
+                "text": "First FTSE100 company",
+                "date": "2018-05-28",
+                "textOffset": [
+                    449,
+                    599
+                ],
+                "length": 16
+            },
+            {
+                "month": "june",
+                "dateX": 0,
+                "dateY": -220,
+                "path": "M109,294C155,379,259,442,435,441",
+                "text": "44 of 1,754 employees are men at Phase Eight",
+                "date": "2018-06-15",
+                "textOffset": [
+                    85,
+                    259
+                ],
+                "length": 25
+            },
+            {
+                "month": "september",
+                "dateX": 23.548387096774196,
+                "dateY": -131.8709677419355,
+                "path": "M84,583C86,527,104,449,151,398",
+                "text": "Most of the school's highest-paid staff are male teachers",
+                "date": "2018-09-11",
+                "textOffset": [
+                    79,
+                    603
+                ],
+                "length": 30
+            }
+        ]
         const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 
         months.forEach(month => {
@@ -344,7 +356,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .select("svg")
 
             const swoopy = swoopyDrag()
-                  //.draggable(true)
+                //.draggable(true)
                 .x(d => d.dateX)
                 .y(d => d.dateY)
                 .on('drag', () => window.annotations = annotations)
@@ -703,6 +715,9 @@ const onScroll = (domElements, cellSize, dates) => {
         counterNewNumber = 0;
     }
 
+    const moreThan = document.querySelector(".more-than");
+    const lessThan = document.querySelector(".less-than");
+
     d3.select(counterSticky)
         .transition()
         .duration(500)
@@ -711,6 +726,14 @@ const onScroll = (domElements, cellSize, dates) => {
             const currentVal = parseInt(this.textContent.replace(/,/g, ""));
             const i = d3.interpolate(currentVal, counterNewNumber)
             return (t) => {
+                // console.log(t);
+                if (i(t) !== 1) {
+                    moreThan.style.display = "inline";
+                    lessThan.style.display = "none";
+                } else {
+                    moreThan.style.display = "none";
+                    lessThan.style.display = "inline";
+                }
                 d3.select(counterSticky).text(numberWithCommas(parseInt(i(t))));
             }
         });
