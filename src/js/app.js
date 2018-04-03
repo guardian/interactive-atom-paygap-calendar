@@ -1,5 +1,7 @@
 import makeMonthSvgs from './makeMonth';
+
 import * as d3 from "d3"
+
 import { swoopyDrag } from 'd3-swoopy-drag';
 import loadJson from '../components/load-json';
 import Awesomeplete from './awesomplete.js'
@@ -379,6 +381,12 @@ const addData = (dates, domElements) => {
                 .style('stroke-width', '3px')
                 .style('opacity', 0)
                 .text(d => d.highlightCompanyName)
+                // .each(function(d) {
+                //     console.log(d, d.highlightCompanyName, this)
+                //     d3.select(this)
+                //         .text('');
+                //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
+                // });
 
 
             firstHighlight.append('text')
@@ -389,7 +397,12 @@ const addData = (dates, domElements) => {
                 .attr("text-anchor", "middle")
                 .style('opacity', 0)
                 .text(d => d.highlightCompanyName)
-
+                // .each(function(d) {
+                //     console.log(d, d.highlightCompanyName, this)
+                //     d3.select(this)
+                //         .text('');
+                //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
+                // });
 
             daysInMonth.select('.dayData')
                 // .attr('r', d => d.highlighted ? 6 : 3)
