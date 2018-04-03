@@ -243,19 +243,47 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             });
         }
 
-        const annotations = [{
-            "month": "january",
-            "dateX": 40,
-            "dateY": -224,
-            "path": "M325,592C286,574,267,537,266,490",
-            "text": "17 January is the first day when a company stops paying women. A 95.5% pay gap",
-            "date": "2018-01-17",
-            "textOffset": [
-                331,
-                597
-            ],
-            "length": document.querySelector(".interactive-atom").clientWidth === 620 ? 30 : 18
-        }]
+        const annotations = [
+  {
+    "month": "january",
+    "dateX": 40,
+    "dateY": -224,
+    "path": "M325,592C286,574,267,537,266,490",
+    "text": "17 January is the first day when a company stops paying women. A 95.5% pay gap",
+    "date": "2018-01-17",
+    "textOffset": [
+      331,
+      597
+    ],
+    "length": 30
+  },
+  {
+    "month": "april",
+    "dateX": 0,
+    "dateY": -224,
+    "path": "M442,589C488,556,520,473,494,408",
+    "text": "Only eight of Ryanair’s 554 UK-based pilots are female, while women make up more than two-thirds of the low-paid cabin crew",
+    "date": "2018-04-13",
+    "textOffset": [
+      192,
+      599
+    ],
+    "length": 30
+  },
+  {
+    "month": "june",
+    "dateX": 0,
+    "dateY": -224,
+    "path": "M320,320C331,352,375,420,463,443",
+    "text": "Phase Eight employs only 44 men out of a workforce of 1,754 and all but five work in the corporate head office",
+    "date": "2018-06-15",
+    "textOffset": [
+      184,
+      242
+    ],
+    "length": 30
+  }
+]
 
         const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 
@@ -264,7 +292,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .select("svg")
 
             const swoopy = swoopyDrag()
-                // .draggable(true)
+                    //.draggable(true)
                 .x(d => d.dateX)
                 .y(d => d.dateY)
                 .on('drag', () => window.annotations = annotations)
