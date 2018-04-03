@@ -369,11 +369,26 @@
     }
 }
 
-.search-box-parent {
+#search-box-parent {
     div {
         display: inline-block;
     }
     @include fs-headline(3);
+    &.positive {
+        .colour {
+            color: #ff7e00;
+        }
+    }
+    &.negative {
+        .colour {
+            color: #2aadbc;
+        }
+    }
+    &.neutral {
+        .colour {
+            color: #767676;
+        }
+    }
 }
 
 .search-box-date,
