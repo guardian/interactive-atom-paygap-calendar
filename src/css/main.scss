@@ -110,10 +110,6 @@
     }
 }
 
-.months-container {
-    margin-top: 100px;
-}
-
 .gv-w,
 .gv-m {
     margin-bottom: 500px;
@@ -424,6 +420,7 @@
 }
 
 .search-container {
+
   min-width: 260px;
 
     @include mq(tablet) {
@@ -436,6 +433,7 @@
   border: 2px solid #333;
   box-shadow: 4px 4px 0 0 #333;
   padding: 0px 20px 20px 20px;
+  margin-bottom: 100px;
     div {
         display: inline-block;
     }
