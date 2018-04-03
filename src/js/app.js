@@ -665,6 +665,8 @@ const onScroll = (domElements, cellSize, dates) => {
                     d3.select(group).attr("data-foo", d => {
                         latestWeek = d.values[(d.values.length - 1)];
                     });
+                } else {
+                    group.classList.remove("has-data");
                 }
 
                 if (!group.labels) {
@@ -685,7 +687,15 @@ const onScroll = (domElements, cellSize, dates) => {
 
     counterMonth.innerHTML = formatMonth(latestWeek);
 
-    const counterNewNumber = dates.filter(d => { return d.date && latestWeek.getTime() == d.date.getTime() })[0].womenTotalPaidLess;
+    const counterNewNumberFilter = dates.filter(d => { return d.date && latestWeek && latestWeek.getTime() && latestWeek.getTime() == d.date.getTime() })[0];
+
+    let counterNewNumber;
+
+    if (counterNewNumberFilter) {
+        counterNewNumber = counterNewNumberFilter.womenTotalPaidLess;
+    } else {
+        counterNewNumber = 0;
+    }
 
     d3.select(counterSticky)
         .transition()
