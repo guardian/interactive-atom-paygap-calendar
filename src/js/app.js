@@ -113,19 +113,15 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
         //             d.date = dayArray[day].getDate() + " " + monthNames[dayArray[day].getMonth()];
         //         }
 
-        //         // console.log(d.date)
         //     }
 
         //     return d;
 
         // });
 
-        // console.log(JSON.stringify(toLog));
 
         //add back the weekend days
         dates = addsWeekends(dates);
-
-        console.log(dates);
 
         //creates total aggregate
         var totalWomenCounter = 0;
@@ -423,7 +419,7 @@ const addData = (dates, domElements) => {
         month.selectAll(".day-group").data(filteredDates);
 
         const daysInMonth = d3.select(domElement).selectAll(".day-group");
-        const clientWidth = document.querySelector(".interactive-atom").clientWidth;
+        const windowWidth = window.innerWidth;
 
         const calcCircleRadius = (windowWidth) => {
             if (windowWidth < 400) {
@@ -451,15 +447,15 @@ const addData = (dates, domElements) => {
             }
         }
 
-        const circleRadius = calcCircleRadius(window.innerWidth);
-        const distanceRadius = calcDistanceRadius(window.innerWidth);
+        const circleRadius = calcCircleRadius(windowWidth);
+        const distanceRadius = calcDistanceRadius(windowWidth);
 
         const parent = daysInMonth
             .append("g")
             .attr('opacity', 0)
             .classed("circle-g", true)
             .selectAll("circle")
-            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: distanceRadius, highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName }))))
+            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: distanceRadius, highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName, isFriday: d.isFriday, isMonday: d.isMonday }))))
             .enter();
 
         const circles = parent
@@ -472,12 +468,20 @@ const addData = (dates, domElements) => {
             .attr('cy', d => d.y + cellSize / 2)
 
         const firstHighlight = parent.filter(d => d.highlighted).filter((d, i) => i === 0)
-
+        
         firstHighlight.append("text")
             .classed('circle-label', true)
             .attr("x", cellSize / 2)
             .attr('y', cellSize / 2)
-            .attr("text-anchor", "middle")
+            .attr("text-anchor", d => {
+                if (d.isFriday && windowWidth < 980 && d.highlightCompanyName > 24) {
+                    return 'end';
+                } else if (d.isMonday && windowWidth < 980 && d.highlightCompanyName > 24) {
+                    return 'start';
+                } else {
+                    return 'middle'
+                }
+            })
             .attr('dy', 18)
             .style('stroke', 'white')
             .style('stroke-width', '3px')
@@ -490,7 +494,15 @@ const addData = (dates, domElements) => {
             .attr("x", cellSize / 2)
             .attr('y', cellSize / 2)
             .attr('dy', 18)
-            .attr("text-anchor", "middle")
+            .attr("text-anchor", d => {
+                if (d.isFriday && windowWidth < 980 && d.highlightCompanyName > 24) {
+                    return 'end';
+                } else if (d.isMonday && windowWidth < 980 && d.highlightCompanyName > 24) {
+                    return 'start';
+                } else {
+                    return 'middle'
+                }
+            })
             .style('opacity', 1)
             .text(d => d.highlightCompanyName)
 
@@ -510,7 +522,7 @@ const addData = (dates, domElements) => {
         days.classed('friday', d => d.isFriday)
 
         const monthSvg = month.select('svg');
-        const textOnTop = monthSvg.append("g").classed("text-on-top", true)
+        const textOnTop = monthSvg.append("g").classed("text-on-top", true);
 
         monthSvg.selectAll('.circle-label, .circle-label-outline').each(function(a) {
             const text = d3.select(this);
@@ -636,7 +648,6 @@ const onScroll = (domElements, cellSize, dates) => {
     let shouldBreak = false;
     let latestWeek = "";
 
-    // console.log(counterMarker.getBoundingClientRect().top)
     if (counterMarker.getBoundingClientRect().top <= 0) {
         counter.classList.add("unfixed-bottom");
     } else if (counterParent.getBoundingClientRect().top <= 0) {
@@ -650,7 +661,7 @@ const onScroll = (domElements, cellSize, dates) => {
     for (let p = 0; p < domElements.length; p++) {
         const element = domElements[p];
         const monthBbox = element.getBoundingClientRect();
-        const monthInView = monthBbox.top < showThreshold & monthBbox.bottom > 0;
+        const monthInView = monthBbox.top < window.innerHeight & monthBbox.bottom > 0;
         // const scrolledPast = monthBbox.bottom > 0;
 
         if (monthInView) {
@@ -659,13 +670,8 @@ const onScroll = (domElements, cellSize, dates) => {
             }
 
             for (let c = 0; c < element.weekEls.length; c++) {
-                // if (!element.weekEls[c].transitioned) {
                 const group = element.weekEls[c];
                 const groupRect = group.getBoundingClientRect();
-
-                // transitionCircles(group, groupRect)
-
-                // group.classList.add("has-data");
 
                 if (groupRect.top < showThreshold) {
                     group.classList.add("has-data");
@@ -680,14 +686,7 @@ const onScroll = (domElements, cellSize, dates) => {
                     group.labels = d3.select(group).selectAll('.circle-label, .circle-label-outline');
                 }
 
-                // const arrows = d3.select(element).select('.swoopy-arrow-group');
-
                 group.labels.style('opacity', groupRect.top < showThreshold ? 1 : 0)
-
-                // element.weekEls[c].transitioned = true;
-
-                // break;
-                // }
             }
         }
     }
