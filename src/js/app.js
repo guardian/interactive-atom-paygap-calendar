@@ -690,6 +690,9 @@ const onScroll = (domElements, cellSize, dates) => {
         counterNewNumber = 0;
     }
 
+    const moreThan = document.querySelector(".more-than");
+    const lessThan = document.querySelector(".less-than");
+
     d3.select(counterSticky)
         .transition()
         .duration(500)
@@ -698,6 +701,14 @@ const onScroll = (domElements, cellSize, dates) => {
             const currentVal = parseInt(this.textContent.replace(/,/g, ""));
             const i = d3.interpolate(currentVal, counterNewNumber)
             return (t) => {
+                // console.log(t);
+                if (i(t) !== 1) {
+                    moreThan.style.display = "inline";
+                    lessThan.style.display = "none";
+                } else {
+                    moreThan.style.display = "none";
+                    lessThan.style.display = "inline";
+                }
                 d3.select(counterSticky).text(numberWithCommas(parseInt(i(t))));
             }
         });
