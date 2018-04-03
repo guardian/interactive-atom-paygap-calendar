@@ -616,8 +616,8 @@ const transitionCircles = (group, groupRect) => {
         .delay((d, i, a) => {
             return groupRect.top < showThreshold ? d3.easeCubicIn((i / a.length)) * 1000 : Math.random() * 500;
         })
-        .ease(d3.easeExpOut)
-        .duration(groupRect.top < showThreshold ? 500 : 250)
+        // .ease(d3.easeExpOut)
+        .duration(0)
         .style("transform", d => {
             return "none";
         })
