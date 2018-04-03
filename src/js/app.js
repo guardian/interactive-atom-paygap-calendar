@@ -24,7 +24,7 @@ const domElements = document.querySelectorAll('.cal-month'); // months need to b
 let size = 0;
 let lastScroll = null;
 
-const showThreshold = window.innerHeight / 1.25;
+const showThreshold = window.innerHeight / 2;
 const annotationsThreshold = window.innerHeight / 2;
 
 var formatMonth = d3.timeFormat("%e %B");
