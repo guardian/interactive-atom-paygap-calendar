@@ -361,7 +361,7 @@ const addData = (dates, domElements) => {
         month.selectAll(".day-group").data(filteredDates);
 
         const daysInMonth = d3.select(domElement).selectAll(".day-group");
-        const clientWidth = document.querySelector(".interactive-atom").clientWidth;
+        const windowWidth = window.innerWidth;
 
         const calcCircleRadius = (windowWidth) => {
             if (windowWidth < 400) {
@@ -389,12 +389,12 @@ const addData = (dates, domElements) => {
             }
         }
 
-        const circleRadius = calcCircleRadius(window.innerWidth);
-        const distanceRadius = calcDistanceRadius(window.innerWidth);
+        const circleRadius = calcCircleRadius(windowWidth);
+        const distanceRadius = calcDistanceRadius(windowWidth);
 
         const parent = daysInMonth
             .selectAll("circle")
-            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: distanceRadius + Math.random(), highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName }))))
+            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: distanceRadius + Math.random(), highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName, isFriday: d.isFriday, isMonday: d.isMonday }))))
             .enter();
 
         const circles = parent
@@ -407,12 +407,20 @@ const addData = (dates, domElements) => {
             .attr('cy', d => d.y + cellSize / 2)
 
         const firstHighlight = parent.filter(d => d.highlighted).filter((d, i) => i === 0)
-
+        
         firstHighlight.append("text")
             .classed('circle-label', true)
             .attr("x", cellSize / 2)
             .attr('y', cellSize / 2)
-            .attr("text-anchor", "middle")
+            .attr("text-anchor", d => {
+                if (d.isFriday && windowWidth < 980) {
+                    return 'end';
+                } else if (d.isMonday && windowWidth < 980) {
+                    return 'start';
+                } else {
+                    return 'middle'
+                }
+            })
             .attr('dy', 18)
             .style('stroke', 'white')
             .style('stroke-width', '3px')
@@ -425,7 +433,15 @@ const addData = (dates, domElements) => {
             .attr("x", cellSize / 2)
             .attr('y', cellSize / 2)
             .attr('dy', 18)
-            .attr("text-anchor", "middle")
+            .attr("text-anchor", d => {
+                if (d.isFriday && windowWidth < 980) {
+                    return 'end';
+                } else if (d.isMonday && windowWidth < 980) {
+                    return 'start';
+                } else {
+                    return 'middle'
+                }
+            })
             .style('opacity', 1)
             .text(d => d.highlightCompanyName)
 
@@ -446,18 +462,21 @@ const addData = (dates, domElements) => {
 
         const monthSvg = month.select('svg');
         const textOnTop = monthSvg.append("g").classed("text-on-top", true)
+        
+        const labels = monthSvg.selectAll('.circle-label');
+        const outlines = monthSvg.selectAll('.circle-label-outline');
 
-        monthSvg.selectAll('.circle-label').each(function (a) {
+        labels.each(function (a) {
             const text = d3.select(this);
             const textTransform = text.node().parentNode.getAttribute("transform");
             const removed = text.attr("transform", textTransform);
 
             textOnTop.append(function () {
                 return text.node();
-            })
+            })        
         });
 
-        monthSvg.selectAll('.circle-label-outline').each(function (a) {
+        outlines.each(function (a) {
             const text = d3.select(this);
             const textTransform = text.node().parentNode.getAttribute("transform");
             const removed = text.attr("transform", textTransform);

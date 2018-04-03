@@ -231,45 +231,44 @@
 .circle-label-outline {
     @include mq(mobile) {
         @include fs-textSans(2);
-        text-anchor: middle;
     }
 }
 
-.monday > .circle-label-outline {
-    @include mq(mobile) {
-        text-anchor: start;
-    }
-    @include mq(desktop) {
-        text-anchor: middle;
-    }
-}
+// .monday > .circle-label-outline {
+//     @include mq(mobile) {
+//         text-anchor: start;
+//     }
+//     @include mq(desktop) {
+//         text-anchor: middle;
+//     }
+// }
 
-.monday > .circle-label {
-    @include mq(mobile) {
-        text-anchor: start;
-    }
-    @include mq(desktop) {
-        text-anchor: middle;
-    }
-}
+// .monday > .circle-label {
+//     @include mq(mobile) {
+//         text-anchor: start;
+//     }
+//     @include mq(desktop) {
+//         text-anchor: middle;
+//     }
+// }
 
-.friday > .circle-label-outline {
-    @include mq(mobile) {
-        text-anchor: end;
-    }
-    @include mq(desktop) {
-        text-anchor: middle;
-    }
-}
+// .friday > .circle-label-outline {
+//     @include mq(mobile) {
+//         text-anchor: end;
+//     }
+//     @include mq(desktop) {
+//         text-anchor: middle;
+//     }
+// }
 
-.friday > .circle-label {
-    @include mq(mobile) {
-        text-anchor: end;
-    }
-    @include mq(desktop) {
-        text-anchor: middle;
-    }
-}
+// .friday > .circle-label {
+//     @include mq(mobile) {
+//         text-anchor: end;
+//     }
+//     @include mq(desktop) {
+//         text-anchor: middle;
+//     }
+// }
 
 // search
 // awesomeplete 
