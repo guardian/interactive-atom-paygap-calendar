@@ -308,6 +308,19 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                     242
                 ],
                 "length": 30
+            },
+            {
+                "month": "september",
+                "dateX": 23.548387096774196,
+                "dateY": -131.8709677419355,
+                "path": "M84,583C86,527,104,449,151,398",
+                "text": "Most of the school's highest-paid staff are male teachers",
+                "date": "2018-09-11",
+                "textOffset": [
+                    79,
+                    603
+                ],
+                "length": 30
             }
         ]
 
@@ -442,7 +455,7 @@ const addData = (dates, domElements) => {
             .attr('cy', d => d.y + cellSize / 2)
 
         const firstHighlight = parent.filter(d => d.highlighted).filter((d, i) => i === 0)
-        
+
         firstHighlight.append("text")
             .classed('circle-label', true)
             .attr("x", cellSize / 2)
