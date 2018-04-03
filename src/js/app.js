@@ -113,19 +113,15 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
         //             d.date = dayArray[day].getDate() + " " + monthNames[dayArray[day].getMonth()];
         //         }
 
-        //         // console.log(d.date)
         //     }
 
         //     return d;
 
         // });
 
-        // console.log(JSON.stringify(toLog));
 
         //add back the weekend days
         dates = addsWeekends(dates);
-
-        console.log(dates);
 
         //creates total aggregate
         var totalWomenCounter = 0;
@@ -452,9 +448,9 @@ const addData = (dates, domElements) => {
             .attr("x", cellSize / 2)
             .attr('y', cellSize / 2)
             .attr("text-anchor", d => {
-                if (d.isFriday && windowWidth < 980) {
+                if (d.isFriday && windowWidth < 980 && d.highlightCompanyName > 24) {
                     return 'end';
-                } else if (d.isMonday && windowWidth < 980) {
+                } else if (d.isMonday && windowWidth < 980 && d.highlightCompanyName > 24) {
                     return 'start';
                 } else {
                     return 'middle'
@@ -473,9 +469,9 @@ const addData = (dates, domElements) => {
             .attr('y', cellSize / 2)
             .attr('dy', 18)
             .attr("text-anchor", d => {
-                if (d.isFriday && windowWidth < 980) {
+                if (d.isFriday && windowWidth < 980 && d.highlightCompanyName > 24) {
                     return 'end';
-                } else if (d.isMonday && windowWidth < 980) {
+                } else if (d.isMonday && windowWidth < 980 && d.highlightCompanyName > 24) {
                     return 'start';
                 } else {
                     return 'middle'
@@ -626,7 +622,6 @@ const onScroll = (domElements, cellSize, dates) => {
     let shouldBreak = false;
     let latestWeek = "";
 
-    // console.log(counterMarker.getBoundingClientRect().top)
     if (counterMarker.getBoundingClientRect().top <= 0) {
         counter.classList.add("unfixed-bottom");
     } else if (counterParent.getBoundingClientRect().top <= 0) {
