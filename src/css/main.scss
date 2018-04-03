@@ -227,8 +227,6 @@
 .circle-label-outline {
     @include mq(mobile) {
         @include fs-textSans(2);
-<<<<<<< HEAD
-        text-anchor: middle;
     }
 }
 
@@ -270,8 +268,6 @@
     }
     @include mq(desktop) {
         text-anchor: middle;
-=======
->>>>>>> 84334ce052e8f77cceffd1f55ba00ebeecf1dbb9
     }
 }
 
@@ -490,12 +486,9 @@
     min-width: 100px;
     margin-left: 5px;
 }
-<<<<<<< HEAD
-=======
 
 .swoopy-arrow-group {
     text {
         @include fs-textSans(4);
     }
 }
->>>>>>> 84334ce052e8f77cceffd1f55ba00ebeecf1dbb9
