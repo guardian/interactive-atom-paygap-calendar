@@ -275,18 +275,45 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
         }
 
         const annotations = [{
-            "month": "january",
-            "dateX": 40,
-            "dateY": -224,
-            "path": "M325,592C286,574,267,537,266,490",
-            "text": "17 January is the first day when a company stops paying women. A 95.5% pay gap",
-            "date": "2018-01-17",
-            "textOffset": [
-                331,
-                597
-            ],
-            "length": document.querySelector(".interactive-atom").clientWidth === 620 ? 30 : 18
-        }]
+                "month": "january",
+                "dateX": 40,
+                "dateY": -224,
+                "path": "M325,592C286,574,267,537,266,490",
+                "text": "17 January is the first day when a company stops paying women. A 95.5% pay gap",
+                "date": "2018-01-17",
+                "textOffset": [
+                    331,
+                    597
+                ],
+                "length": 30
+            },
+            {
+                "month": "april",
+                "dateX": 0,
+                "dateY": -224,
+                "path": "M442,589C488,556,520,473,494,408",
+                "text": "Only eight of Ryanair’s 554 UK-based pilots are female, while women make up more than two-thirds of the low-paid cabin crew",
+                "date": "2018-04-13",
+                "textOffset": [
+                    192,
+                    599
+                ],
+                "length": 30
+            },
+            {
+                "month": "june",
+                "dateX": 0,
+                "dateY": -224,
+                "path": "M320,320C331,352,375,420,463,443",
+                "text": "Phase Eight employs only 44 men out of a workforce of 1,754 and all but five work in the corporate head office",
+                "date": "2018-06-15",
+                "textOffset": [
+                    184,
+                    242
+                ],
+                "length": 30
+            }
+        ]
 
         const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 
@@ -295,7 +322,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .select("svg")
 
             const swoopy = swoopyDrag()
-                // .draggable(true)
+                //.draggable(true)
                 .x(d => d.dateX)
                 .y(d => d.dateY)
                 .on('drag', () => window.annotations = annotations)
@@ -365,24 +392,56 @@ const addData = (dates, domElements) => {
         const lastDayIndex = dates.findIndex(d => isSameDay(d.date, lastDayOfMonth));
 
         const filteredDates = dates.slice(firstDayIndex, lastDayIndex + 1);
-        d3.select(domElement).selectAll(".day-group").data(filteredDates);
+        const month = d3.select(domElement);
 
-        const daysInMonth = d3.select(domElement).selectAll(".day-group")
+        month.selectAll(".day-group").data(filteredDates);
+
+        const daysInMonth = d3.select(domElement).selectAll(".day-group");
+        const clientWidth = document.querySelector(".interactive-atom").clientWidth;
+
+        const calcCircleRadius = (windowWidth) => {
+            if (windowWidth < 400) {
+                return 1;
+            } else if (windowWidth < 980) {
+                return 1.5;
+            } else if (windowWidth < 1140) {
+                return 1.8;
+            } else if (windowWidth >= 1140) {
+                return 2;
+            }
+        }
+
+        const calcDistanceRadius = (windowWidth) => {
+            if (windowWidth < 400) {
+                return 1.5;
+            } else if (windowWidth < 560) {
+                return 2;
+            } else if (windowWidth < 740) {
+                return 2;
+            } else if (windowWidth < 1140) {
+                return 2.5;
+            } else if (windowWidth >= 1140) {
+                return 3;
+            }
+        }
+
+        const circleRadius = calcCircleRadius(window.innerWidth);
+        const distanceRadius = calcDistanceRadius(window.innerWidth);
 
         const parent = daysInMonth
             .append("g")
             .attr('opacity', 0)
             .classed("circle-g", true)
             .selectAll("circle")
-            // .data(d => { return new Array(d['womenPaidLess']).fill(d) })
-            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: 4, highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName }))))
-            .enter()
+            .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: distanceRadius, highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName }))))
+            .enter();
 
         const circles = parent
             .append("circle")
             .attr('class', 'dayData')
             .attr('fill', '#ff7e00')
-            .attr('r', 3)
+            // .attr('opacity', 0)
+            .attr('r', circleRadius)
             .attr('cx', d => d.x + cellSize / 2)
             .attr('cy', d => d.y + cellSize / 2)
 
@@ -396,14 +455,8 @@ const addData = (dates, domElements) => {
             .attr('dy', 18)
             .style('stroke', 'white')
             .style('stroke-width', '3px')
-            .style('opacity', 0)
+            .style('opacity', 1)
             .text(d => d.highlightCompanyName)
-            // .each(function(d) {
-            //     console.log(d, d.highlightCompanyName, this)
-            //     d3.select(this)
-            //         .text('');
-            //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
-            // });
 
 
         firstHighlight.append('text')
@@ -412,14 +465,8 @@ const addData = (dates, domElements) => {
             .attr('y', cellSize / 2)
             .attr('dy', 18)
             .attr("text-anchor", "middle")
-            .style('opacity', 0)
+            .style('opacity', 1)
             .text(d => d.highlightCompanyName)
-            // .each(function(d) {
-            //     console.log(d, d.highlightCompanyName, this)
-            //     d3.select(this)
-            //         .text('');
-            //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
-            // });
 
         daysInMonth.select('.dayData')
             // .attr('r', d => d.highlighted ? 6 : 3)
@@ -429,102 +476,36 @@ const addData = (dates, domElements) => {
             .classed('weekend', function(d) {
                 return d.isWeekend === true;
             })
+
+        const days = d3.select(domElement).selectAll(".day-group");
+
+        days.classed('weekend', d => d.isWeekend)
+        days.classed('monday', d => d.isMonday)
+        days.classed('friday', d => d.isFriday)
+
+        const monthSvg = month.select('svg');
+        const textOnTop = monthSvg.append("g").classed("text-on-top", true)
+
+        monthSvg.selectAll('.circle-label, .circle-label-outline').each(function(a) {
+            const text = d3.select(this);
+            const textTransform = text.node().parentNode.parentNode.getAttribute("transform");
+            const removed = text.attr("transform", textTransform).remove();
+
+            textOnTop.append(function() {
+                return removed.node();
+            })
+        });
+
+        // monthSvg.selectAll('.circle-label-outline').each(function(a) {
+        //     const text = d3.select(this);
+        //     const textTransform = text.node().parentNode.getAttribute("transform");
+        //     const removed = text.attr("transform", textTransform);
+
+        //     textOnTop.append(function() {
+        //         return text.node();
+        //     })
+        // });
     }
-
-    // domElements.forEach(domElement => {
-    //     window.requestAnimationFrame(() => {
-    //         const monthAsInt = monthsArray.indexOf(domElement.classList[1]);
-    //         const firstDayOfMonth = new Date(2018, monthAsInt, 1);
-    //         const lastDayOfMonth = d3.timeDays(firstDayOfMonth, new Date(2018, monthAsInt + 1, 1)).slice(-1)[0];
-
-    //         const firstDayIndex = dates.findIndex(d => isSameDay(d.date, firstDayOfMonth));
-    //         const lastDayIndex = dates.findIndex(d => isSameDay(d.date, lastDayOfMonth));
-
-    //         const filteredDates = dates.slice(firstDayIndex, lastDayIndex + 1);
-    //         d3.select(domElement).selectAll(".day-group").data(filteredDates);
-
-    //         const daysInMonth = d3.select(domElement).selectAll(".day-group")
-
-    //         const parent = daysInMonth
-    //             .selectAll("circle")
-    //             // .data(d => { return new Array(d['womenPaidLess']).fill(d) })
-    //             .data(d => d3.packSiblings(d3.range(d['womenPaidLess']).map(() => ({ r: 4 + Math.random(), highlighted: d.highlighted, highlightCompanyName: d.highlightCompanyName }))))
-    //             .enter();
-
-    //         const circles = parent
-    //             .append("circle")
-    //             .attr('class', 'dayData')
-    //             .attr('fill', '#ff7e00')
-    //             .attr('opacity', 0)
-    //             .attr('r', 3)
-    //             .attr('cx', d => d.x + cellSize / 2)
-    //             .attr('cy', d => d.y + cellSize / 2)
-
-    //         // circles
-    //         //     .each(function(d, i, a) {
-    //         //         const node = d3.select(this);
-
-    //         //         if (i === 0) {
-    //         //             const count = d.womenPaidLess;
-
-    //         //             const grid = Math.ceil(Math.sqrt(count));
-
-    //         //             sampler = poissonDiscSampler(cellSizeMargin, cellSizeMargin, Math.floor(cellSizeMargin / (grid * 1.25)));
-    //         //         }
-
-    //         //         var s = sampler();
-
-    //         //         node.attr('cx', (d, i, a) => {
-    //         //                 return s[0] + 5;
-    //         //             })
-    //         //             .attr('cy', (d, i, a) => s[1] + 5)
-    //         //     });
-
-    //         const firstHighlight = parent.filter(d => d.highlighted).filter((d, i) => i === 0)
-
-    //         firstHighlight.append("text")
-    //             .classed('circle-label', true)
-    //             .attr("x", cellSize / 2)
-    //             .attr('y', cellSize / 2)
-    //             .attr("text-anchor", "middle")
-    //             .attr('dy', 18)
-    //             .style('stroke', 'white')
-    //             .style('stroke-width', '3px')
-    //             .style('opacity', 0)
-    //             .text(d => d.highlightCompanyName)
-    //             // .each(function(d) {
-    //             //     console.log(d, d.highlightCompanyName, this)
-    //             //     d3.select(this)
-    //             //         .text('');
-    //             //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
-    //             // });
-
-
-    //         firstHighlight.append('text')
-    //             .classed('circle-label-outline', true)
-    //             .attr("x", cellSize / 2)
-    //             .attr('y', cellSize / 2)
-    //             .attr('dy', 18)
-    //             .attr("text-anchor", "middle")
-    //             .style('opacity', 0)
-    //             .text(d => d.highlightCompanyName)
-    //             // .each(function(d) {
-    //             //     console.log(d, d.highlightCompanyName, this)
-    //             //     d3.select(this)
-    //             //         .text('');
-    //             //     tspans(d3.select(this), wordwrap(d.highlightCompanyName, 15), 20)
-    //             // });
-
-    //         daysInMonth.select('.dayData')
-    //             // .attr('r', d => d.highlighted ? 6 : 3)
-    //             .attr('stroke', d => d.highlighted ? 'black' : 'none')
-
-    //         d3.select(domElement).selectAll(".day-group")
-    //             .classed('weekend', function(d) {
-    //                 return d.isWeekend === true;
-    //             })
-    //     });
-    // })
 }
 
 function poissonDiscSampler(width, height, radius) {
@@ -757,13 +738,21 @@ const addsWeekends = (dates) => {
     for (var day = 0; day < count; day++) {
         //days in month
         var curday = new Date(2018, 0, day + 1);
-        if (curday.getDay() == 6 || curday.getDay() == 0) {
+        if (curday.getDay() === 6 || curday.getDay() === 0) {
             dates.splice(day, 0, {
                 womenPaidLess: 0,
                 menPaidLess: 0,
                 isWeekend: true
             });
         }
+        if (curday.getDay() === 1) {
+
+        }
+        const isMonday = curday.getDay() === 1;
+        const isFriday = curday.getDay() === 5;
+
+        dates[day].isMonday = isMonday;
+        dates[day].isFriday = isFriday;
         dates[day].date = curday;
     }
     return dates;

@@ -2,11 +2,10 @@ import * as d3 from "d3"
 
 const makeMonthSvgs = (domElements, cellSize) => {
     const width = cellSize * 7;
-    const height = cellSize * 6;
     const format = d3.timeFormat("%Y-%m-%d");
     const monthsArray = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
-    [].slice.call(domElements).forEach(domElement => {
+    [].slice.call(domElements).forEach((domElement, monthC) => {
         const monthAsInt = monthsArray.indexOf(domElement.classList[1]);
 
         // change this func to apply to a single month
@@ -31,6 +30,7 @@ const makeMonthSvgs = (domElements, cellSize) => {
             // + "H" + (w1 + 1) * cellSize + "V" + 0
             // + "H" + (w0 + 1) * cellSize + "Z";
         }
+        const height = (monthC === 11 || monthC === 8) ? cellSize * 6 : cellSize * 5;
 
         const svg = d3.select(domElement).selectAll("svg")
             .data(d3.range(2018, 2019))
