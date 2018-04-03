@@ -216,14 +216,59 @@
 }
 
 .date-label {
-    @include fs-GuardianHeadlineFull(1);
-    fill: #f6f6f6;
-    font-weight: 500;
+    @include mq(mobile) {
+        @include fs-GuardianHeadlineFull(1);
+        fill: #f6f6f6;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    @include mq(tablet) {
+        font-size: 16px;
+    }
 }
 
 .circle-label,
 .circle-label-outline {
-    @include fs-textSans(2);
+    @include mq(mobile) {
+        @include fs-textSans(2);
+        text-anchor: middle;
+    }
+}
+
+.monday > .circle-label-outline {
+    @include mq(mobile) {
+        text-anchor: start;
+    }
+    @include mq(desktop) {
+        text-anchor: middle;
+    }
+}
+
+.monday > .circle-label {
+    @include mq(mobile) {
+        text-anchor: start;
+    }
+    @include mq(desktop) {
+        text-anchor: middle;
+    }
+}
+
+.friday > .circle-label-outline {
+    @include mq(mobile) {
+        text-anchor: end;
+    }
+    @include mq(desktop) {
+        text-anchor: middle;
+    }
+}
+
+.friday > .circle-label {
+    @include mq(mobile) {
+        text-anchor: end;
+    }
+    @include mq(desktop) {
+        text-anchor: middle;
+    }
 }
 
 // search
