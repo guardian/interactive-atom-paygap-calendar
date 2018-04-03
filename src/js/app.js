@@ -624,7 +624,7 @@ const onScroll = (domElements, cellSize, dates) => {
     for (let p = 0; p < domElements.length; p++) {
         const element = domElements[p];
         const monthBbox = element.getBoundingClientRect();
-        const monthInView = monthBbox.top < showThreshold & monthBbox.bottom > 0;
+        const monthInView = monthBbox.top < window.innerHeight & monthBbox.bottom > 0;
         // const scrolledPast = monthBbox.bottom > 0;
 
         if (monthInView) {
