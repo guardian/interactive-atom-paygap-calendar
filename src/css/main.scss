@@ -482,3 +482,9 @@
     min-width: 100px;
     margin-left: 5px;
 }
+
+.swoopy-arrow-group {
+    text {
+        @include fs-textSans(4);
+    }
+}

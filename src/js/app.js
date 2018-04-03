@@ -355,7 +355,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .each(function(d) {
                     d3.select(this)
                         .text('');
-                    tspans(d3.select(this), wordwrap(d.text, d.length), 20)
+                    tspans(d3.select(this), wordwrap(d.text, d.length), 16)
                 });
 
             const onTop = monthSvg.append("g").classed("on-top", true).style('opacity', 1);
@@ -633,13 +633,8 @@ const onScroll = (domElements, cellSize, dates) => {
             }
 
             for (let c = 0; c < element.weekEls.length; c++) {
-                // if (!element.weekEls[c].transitioned) {
                 const group = element.weekEls[c];
                 const groupRect = group.getBoundingClientRect();
-
-                // transitionCircles(group, groupRect)
-
-                // group.classList.add("has-data");
 
                 if (groupRect.top < showThreshold) {
                     group.classList.add("has-data");
@@ -654,14 +649,7 @@ const onScroll = (domElements, cellSize, dates) => {
                     group.labels = d3.select(group).selectAll('.circle-label, .circle-label-outline');
                 }
 
-                // const arrows = d3.select(element).select('.swoopy-arrow-group');
-
                 group.labels.style('opacity', groupRect.top < showThreshold ? 1 : 0)
-
-                // element.weekEls[c].transitioned = true;
-
-                // break;
-                // }
             }
         }
     }
