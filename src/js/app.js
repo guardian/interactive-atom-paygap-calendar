@@ -627,8 +627,7 @@ const onScroll = (domElements, cellSize) => {
         if (!element.weekEls) {
             element.weekEls = element.querySelectorAll(".week-group");
         }
-
-        element.weekEls.forEach(group => {
+        [].slice.call(element.weekEls).forEach(group => {
             const groupRect = group.getBoundingClientRect();
 
             transitionCircles(group, groupRect)
