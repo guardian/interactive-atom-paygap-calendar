@@ -35,7 +35,7 @@ makeMonthSvgs(domElements, cellSize);
 loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx18bsE-n85w1SbaWHjiWE.json').then(res => {
     let circleAnnotations = res.annotations;
 
-    d3.csv(process.env.PATH + "/assets/latest2.csv", function(error, csv) {
+    d3.csv(process.env.PATH + "/assets/final_1.csv", function(error, csv) {
         if (error) throw error;
 
         const csvWithHighlights = csv.map(d => {
@@ -67,12 +67,11 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
         }
 
         //group company totals into days on a calendar
-        csvWithHighlights.forEach(d => {
+        csvWithHighlights.filter(d => Number(d.DiffMedianHourlyPercent) >= -100 && Number(d.DiffMedianHourlyPercent) <= 100).forEach(d => {
             let lower = Number(d.DiffMedianHourlyPercent);
             let val = 1;
             totalCompaniesReporting += val;
             let day = totalWeekDays - Math.floor(Math.abs(lower) / 100 * totalWeekDays);
-
             if (lower === 0) {
                 //skip
             } else if (lower > 0) {
@@ -271,19 +270,6 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
         }
 
         const annotations = [{
-                "month": "january",
-                "dateX": 40,
-                "dateY": -224,
-                "path": "M312,577C284,557,258,524,266,490",
-                "text": "With a 95.5% gap, the first company stops paying women",
-                "date": "2018-01-17",
-                "textOffset": [
-                    320,
-                    595
-                ],
-                "length": 18
-            },
-            {
                 "month": "february",
                 "dateX": 40,
                 "dateY": -224,
@@ -442,7 +428,7 @@ const addData = (dates, domElements) => {
             } else if (windowWidth < 1140) {
                 return 1.8;
             } else if (windowWidth >= 1140) {
-                return 2;
+                return 2.25;
             }
         }
 
@@ -456,7 +442,7 @@ const addData = (dates, domElements) => {
             } else if (windowWidth < 1140) {
                 return 2.5;
             } else if (windowWidth >= 1140) {
-                return 3;
+                return 3.25;
             }
         }
 
