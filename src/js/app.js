@@ -395,7 +395,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                     tspans(d3.select(this), wordwrap(d.text, d.length), 16)
                 });
 
-            const onTop = monthSvg.append("g").classed("on-top", true).style('opacity', 1);
+            const onTop = monthSvg.select('.swoopy-arrow-group').append("g").classed("on-top", true).style('opacity', 1);
 
             annotations.filter(d => d.month === month).forEach(a => {
                 const rect = d3.select("#d" + a.date);
