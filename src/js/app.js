@@ -357,7 +357,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .select("svg")
 
             const swoopy = swoopyDrag()
-                .draggable(true)
+                // .draggable(true)
                 .x(d => d.dateX)
                 .y(d => d.dateY)
                 .on('drag', () => window.annotations = annotations)
