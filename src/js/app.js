@@ -205,7 +205,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             const textBox = d3.select(".search-box-result");
             const paygap = Number(csvWithHighlights.filter(d => d.EmployerName === company)[0].DiffMedianHourlyPercent);
 
-            let day = totalWeekDays - Math.floor(Math.abs(paygap) / 100 * totalWeekDays);
+            let day = (totalWeekDays - 1) - Math.floor(Math.abs(paygap) / 100 * totalWeekDays);
 
             d3.select(".search-box-result").style("display", "inline-block").html(`${company}`);
 
