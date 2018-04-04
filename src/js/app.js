@@ -118,6 +118,8 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
 
         // });
 
+        // console.log(JSON.stringify(toLog));
+
 
         //add back the weekend days
         dates = addsWeekends(dates);
