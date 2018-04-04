@@ -55,7 +55,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
         var dates = [];
 
         // NB POSSIBLY REVIEW: HAD TO CHANGE THIS FROM < TO <= TO PREVENT IT FROM BREAKING WITH THE NEW DATASET
-        for (var i = 0; i <= totalWeekDays; i++) {
+        for (var i = 0; i < totalWeekDays; i++) {
             dates.push({
                 womenPaidLess: 0,
                 menPaidLess: 0,
@@ -71,7 +71,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             let lower = Number(d.DiffMedianHourlyPercent);
             let val = 1;
             totalCompaniesReporting += val;
-            let day = totalWeekDays - Math.floor(Math.abs(lower) / 100 * totalWeekDays);
+            let day = (totalWeekDays - 1) - Math.floor(Math.abs(lower) / 100 * totalWeekDays);
             if (lower === 0) {
                 //skip
             } else if (lower > 0) {
@@ -141,6 +141,8 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             d.womenPctPaidLess = d.womenTotalPaidLess / totalCompaniesReporting;
             d.menPctPaidLess = d.menTotalPaidLess / totalCompaniesReporting;
         });
+
+        console.log(dates);
 
         //search box
 
@@ -271,86 +273,85 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
             });
         }
 
-        const annotations = [
-            {
-              "month": "january",
-              "dateX": 40,
-              "dateY": -224,
-              "path": "M198,448C139,483,153,564,215,589",
-              "text": "Zero companies stopped paying women in January",
-              "date": "2018-01-31",
-              "textOffset": [
-                217,
-                451
-              ],
-              "length": 25
+        const annotations = [{
+                "month": "january",
+                "dateX": 40,
+                "dateY": -224,
+                "path": "M198,448C139,483,153,564,215,589",
+                "text": "Zero companies stopped paying women in January",
+                "date": "2018-01-31",
+                "textOffset": [
+                    217,
+                    451
+                ],
+                "length": 25
             },
             {
-              "month": "february",
-              "dateX": 40,
-              "dateY": -224,
-              "path": "M332,576C331,557,337,526,389,532",
-              "text": "Already working for free this year",
-              "date": "2018-02-23",
-              "textOffset": [
-                320,
-                595
-              ],
-              "length": 18
+                "month": "february",
+                "dateX": 40,
+                "dateY": -224,
+                "path": "M332,576C331,557,337,526,389,532",
+                "text": "Already working for free this year",
+                "date": "2018-02-23",
+                "textOffset": [
+                    320,
+                    595
+                ],
+                "length": 18
             },
             {
-              "month": "april",
-              "dateX": 0,
-              "dateY": -224,
-              "path": "M312,587C269,505,293,372,428,358",
-              "text": "Only 8 women in higher-paid  pilot roles",
-              "date": "2018-04-13",
-              "textOffset": [
-                276,
-                608
-              ],
-              "length": 20
+                "month": "april",
+                "dateX": 0,
+                "dateY": -224,
+                "path": "M312,587C269,505,293,372,428,358",
+                "text": "Only 8 women in higher-paid  pilot roles",
+                "date": "2018-04-13",
+                "textOffset": [
+                    276,
+                    608
+                ],
+                "length": 20
             },
             {
-              "month": "may",
-              "dateX": 0,
-              "dateY": -224,
-              "path": "M462,566C376,527,227,533,138,609",
-              "text": "First FTSE100 company",
-              "date": "2018-05-28",
-              "textOffset": [
-                449,
-                599
-              ],
-              "length": 16
+                "month": "may",
+                "dateX": 0,
+                "dateY": -224,
+                "path": "M462,566C376,527,227,533,138,609",
+                "text": "First FTSE100 company",
+                "date": "2018-05-28",
+                "textOffset": [
+                    449,
+                    599
+                ],
+                "length": 16
             },
             {
-              "month": "june",
-              "dateX": 0,
-              "dateY": -220,
-              "path": "M109,294C155,379,259,442,435,441",
-              "text": "44 of 1,754 employees are men at Phase Eight",
-              "date": "2018-06-15",
-              "textOffset": [
-                85,
-                259
-              ],
-              "length": 25
+                "month": "june",
+                "dateX": 0,
+                "dateY": -220,
+                "path": "M109,294C155,379,259,442,435,441",
+                "text": "44 of 1,754 employees are men at Phase Eight",
+                "date": "2018-06-15",
+                "textOffset": [
+                    85,
+                    259
+                ],
+                "length": 25
             },
             {
-              "month": "september",
-              "dateX": 23.548387096774196,
-              "dateY": -131.8709677419355,
-              "path": "M84,583C86,527,104,449,151,398",
-              "text": "Most of the school's highest-paid staff are male teachers",
-              "date": "2018-09-11",
-              "textOffset": [
-                79,
-                603
-              ],
-              "length": 30
+                "month": "september",
+                "dateX": 23.548387096774196,
+                "dateY": -131.8709677419355,
+                "path": "M84,583C86,527,104,449,151,398",
+                "text": "Most of the school's highest-paid staff are male teachers",
+                "date": "2018-09-11",
+                "textOffset": [
+                    79,
+                    603
+                ],
+                "length": 30
             }
-          ];
+        ];
 
         const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 
@@ -359,7 +360,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .select("svg")
 
             const swoopy = swoopyDrag()
-                 //.draggable(true)
+                //.draggable(true)
                 .x(d => d.dateX)
                 .y(d => d.dateY)
                 .on('drag', () => window.annotations = annotations)
