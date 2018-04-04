@@ -290,9 +290,9 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 "month": "february",
                 "dateX": 40,
                 "dateY": -224,
-                "path": "M332,576C331,557,337,526,389,532",
+                "path": "",
                 "text": "Already working for free this year",
-                "date": "2018-02-23",
+                "date": "2018-02-22",
                 "textOffset": [
                     320,
                     595
@@ -303,12 +303,12 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 "month": "april",
                 "dateX": 0,
                 "dateY": -224,
-                "path": "M312,587C269,505,293,372,428,358",
+                "path": "M271,589C267,507,290,391,349,368",
                 "text": "Only 8 women in higher-paid  pilot roles",
-                "date": "2018-04-13",
+                "date": "2018-04-12",
                 "textOffset": [
-                    276,
-                    608
+                    258,
+                    611
                 ],
                 "length": 20
             },
@@ -316,9 +316,9 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 "month": "may",
                 "dateX": 0,
                 "dateY": -224,
-                "path": "M462,566C376,527,227,533,138,609",
+                "path": "",
                 "text": "First FTSE100 company",
-                "date": "2018-05-28",
+                "date": "2018-05-25",
                 "textOffset": [
                     449,
                     599
@@ -329,9 +329,9 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 "month": "june",
                 "dateX": 0,
                 "dateY": -220,
-                "path": "M109,294C155,379,259,442,435,441",
+                "path": "M109,294C140,380,256,441,345,440",
                 "text": "44 of 1,754 employees are men at Phase Eight",
-                "date": "2018-06-15",
+                "date": "2018-06-14",
                 "textOffset": [
                     85,
                     259
@@ -342,9 +342,9 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 "month": "september",
                 "dateX": 23.548387096774196,
                 "dateY": -131.8709677419355,
-                "path": "M84,583C86,527,104,449,151,398",
+                "path": "M89,583C87,524,86,441,118,398",
                 "text": "Most of the school's highest-paid staff are male teachers",
-                "date": "2018-09-11",
+                "date": "2018-09-10",
                 "textOffset": [
                     79,
                     603
@@ -691,7 +691,7 @@ const onScroll = (domElements, cellSize, dates) => {
             if (!element.swoopy) {
                 element.swoopy = d3.select(element).select('.swoopy-arrow-group');
             }
-            
+
             if (monthBbox.top < showThreshold) {
                 element.swoopy.transition()
                     .delay(500)
