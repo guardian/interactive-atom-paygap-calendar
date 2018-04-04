@@ -350,7 +350,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .annotations(cleanAnnotations(annotations.filter(d => d.month === month)))
 
             const swoopySel = monthSvg.select('.swoopy-arrow-group').call(swoopy);
-
+            swoopySel.style('opacity', 0);
             // arrow path
             swoopySel.selectAll('path')
                 // .attr('class', d => `swoopy-path-${d.dateY}`)
@@ -670,6 +670,26 @@ const onScroll = (domElements, cellSize, dates) => {
             if (!element.weekEls) {
                 element.weekEls = element.querySelectorAll(".week-group");
             }
+
+            if (!element.swoopy) {
+                element.swoopy = d3.select(element).select('.swoopy-arrow-group');
+            }
+            
+            if (monthBbox.top < showThreshold) {
+                element.swoopy.transition()
+                    .delay(500)
+                    .ease(d3.easeExpOut)
+                    .duration(2000)
+                    .style('opacity', 1)
+            } else {
+                element.swoopy.transition()
+                    .delay(0)
+                    .ease(d3.easeExpOut)
+                    .duration(200)
+                    .style('opacity', 0)
+            }
+
+
 
             for (let c = 0; c < element.weekEls.length; c++) {
                 const group = element.weekEls[c];
