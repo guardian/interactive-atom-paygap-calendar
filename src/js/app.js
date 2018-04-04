@@ -313,7 +313,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 "month": "may",
                 "dateX": 0,
                 "dateY": -224,
-                "path": "M136,604C231,507,433,543,461,572",
+                "path": "M462,566C376,527,227,533,138,609",
                 "text": "First FTSE100 company",
                 "date": "2018-05-28",
                 "textOffset": [
@@ -348,7 +348,8 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 ],
                 "length": 30
             }
-        ]
+        ];
+
         const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 
         months.forEach(month => {
@@ -356,7 +357,7 @@ loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx1
                 .select("svg")
 
             const swoopy = swoopyDrag()
-                //.draggable(true)
+                .draggable(true)
                 .x(d => d.dateX)
                 .y(d => d.dateY)
                 .on('drag', () => window.annotations = annotations)
