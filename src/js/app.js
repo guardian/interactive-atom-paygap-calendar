@@ -35,7 +35,9 @@ makeMonthSvgs(domElements, cellSize);
 loadJson('https://interactive.guim.co.uk/docsdata-test/1BxXGXMice-3-fCx61MLLDzx18bsE-n85w1SbaWHjiWE.json').then(res => {
     let circleAnnotations = res.annotations;
 
-    d3.csv(process.env.PATH + "/assets/final_1.csv", function(error, csv) {
+    d3.csv(process.env.PATH + "/assets/final_3.csv", function(error, csv) {
+
+        console.log(csv);
         if (error) throw error;
 
         const csvWithHighlights = csv.map(d => {
